@@ -28,6 +28,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.womensecurityapp.services.SMS;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +52,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     //Variables
     LocationManager locationManager;
+    DatabaseReference databaseReference_location_longitude;
+    DatabaseReference databaseReference_location_latitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +82,11 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        locationText = findViewById(R.id.locationText);
+
+
+        databaseReference_location_longitude=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location").child("longitude");
+        databaseReference_location_latitude=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location").child("latitude");
 
         //Drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -85,8 +97,11 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         // init widgets
         alertButton = findViewById(R.id.alertButton);
+<<<<<<< HEAD
         mapButton = findViewById(R.id.mapButton);
         locationText = findViewById(R.id.locationText);
+=======
+>>>>>>> 5061970ede80e23ff7b075f7a580faf44728c909
 
     }
 
@@ -158,6 +173,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
     public void onLocationChanged(Location location) {
 
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
+        messaging();
+
+        databaseReference_location_latitude.setValue(location.getLatitude());
+        databaseReference_location_longitude.setValue(location.getLongitude());
 
         try{
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -166,13 +185,13 @@ public class action_screen extends AppCompatActivity implements LocationListener
             locationText.setText(locationText.getText()+ "\n" + addresses.get(0).getAddressLine(0) + "\n"
                     + addresses.get(0).getAddressLine(1) + "\n" + addresses.get(0).getAddressLine(2));
 
-            messaging();
+
 
         }
         catch (Exception e){
 
             e.printStackTrace();
-            Log.d(TAG, "OnLocationChanged: " + e.getMessage());
+            Log.d(TAG, "OnLocationChanged: error" + e.getMessage());
 
         }
 
@@ -197,7 +216,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         if (checkSMSpermission() && checkPhoneStatePermission()){
 
-            String destPhone = "6265105303";
+            String destPhone = "9024923695";
             String message = locationText.getText().toString();
 
             SMS smsObject = new SMS();
