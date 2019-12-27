@@ -97,8 +97,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 location=dataSnapshot.getValue(location_model.class);
 
                 set_maker(location);
-
-                Log.e("vyvb",location.getLatitude()+location.getLongitude());
             }
 
             @Override
