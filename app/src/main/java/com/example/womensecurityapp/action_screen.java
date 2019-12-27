@@ -28,15 +28,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.womensecurityapp.services.SMS;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class action_screen extends AppCompatActivity implements LocationListener {
 
@@ -97,11 +93,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         // init widgets
         alertButton = findViewById(R.id.alertButton);
-<<<<<<< HEAD
         mapButton = findViewById(R.id.mapButton);
         locationText = findViewById(R.id.locationText);
-=======
->>>>>>> 5061970ede80e23ff7b075f7a580faf44728c909
 
     }
 
