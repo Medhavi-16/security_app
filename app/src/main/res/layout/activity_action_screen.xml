@@ -25,10 +25,10 @@
             app:title="Women Security"
             app:titleTextColor="#fff" />
 
-        <FrameLayout
+       <!-- <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" />-->
 
     </LinearLayout>
 
@@ -43,25 +43,35 @@
 
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/locationText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/alertButton"/>
 
         <Button
             android:id="@+id/alertButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/alert"
-            android:layout_marginTop="10dp"/>
+            android:layout_centerInParent="true"/>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/mapButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Map"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/alertButton"/>
+
+
+    </RelativeLayout>
 
 
 

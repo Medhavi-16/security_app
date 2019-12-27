@@ -12,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,11 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.womensecurityapp.services.SMS;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +43,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     //widgets
     private DrawerLayout drawer;
     private Button alertButton;
+    private Button mapButton;
     private TextView locationText;
 
     //Variables
@@ -56,6 +55,26 @@ public class action_screen extends AppCompatActivity implements LocationListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_action_screen);
+
+        init();
+
+        alertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestLocationPermission();
+            }
+        });
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(action_screen.this, MapActivity.class));
+            }
+        });
+
+    }
+
+    private void init(){
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,14 +91,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        // init widgets
         alertButton = findViewById(R.id.alertButton);
-
-        alertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requestLocationPermission();
-            }
-        });
+        mapButton = findViewById(R.id.mapButton);
+        locationText = findViewById(R.id.locationText);
 
     }
 
@@ -159,6 +174,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         try{
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
             locationText.setText(locationText.getText()+ "\n" + addresses.get(0).getAddressLine(0) + "\n"
                     + addresses.get(0).getAddressLine(1) + "\n" + addresses.get(0).getAddressLine(2));
 
