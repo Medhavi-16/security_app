@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.SMS;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -48,8 +49,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     //Variables
     LocationManager locationManager;
-    DatabaseReference databaseReference_location_longitude;
-    DatabaseReference databaseReference_location_latitude;
+    DatabaseReference databaseReference_location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +81,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         locationText = findViewById(R.id.locationText);
 
 
-        databaseReference_location_longitude=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location").child("longitude");
-        databaseReference_location_latitude=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location").child("latitude");
+        databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
 
         //Drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -168,8 +167,12 @@ public class action_screen extends AppCompatActivity implements LocationListener
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
         messaging();
 
-        databaseReference_location_latitude.setValue(location.getLatitude());
-        databaseReference_location_longitude.setValue(location.getLongitude());
+        location_model location_data=new location_model();
+
+        location_data.setLatitude(String.valueOf(location.getLatitude()));
+        location_data.setLongitude(String.valueOf(location.getLongitude()));
+
+        databaseReference_location.setValue(location_data);
 
         try{
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
