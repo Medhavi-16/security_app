@@ -1,6 +1,7 @@
 package com.example.womensecurityapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,37 +21,57 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.SMS;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class action_screen extends AppCompatActivity implements LocationListener {
+public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
+    private static final String TAG = "MainActivity";
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
-    private static final String TAG = "MainActivity";
+    private static final float DEFAULT_ZOOM = 15f;
 
     //widgets
     private DrawerLayout drawer;
     private Button alertButton;
     private Button mapButton;
     private TextView locationText;
+    private ImageView gps_icon;
 
     //Variables
+    private Boolean location_permission_granted = false;
     LocationManager locationManager;
     DatabaseReference databaseReference_location;
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +79,12 @@ public class action_screen extends AppCompatActivity implements LocationListener
         setContentView(R.layout.activity_action_screen);
 
         init();
+        requestLocationPermission();
 
         alertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestLocationPermission();
+                getLocation();
             }
         });
 
@@ -72,12 +95,19 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         });
 
+        gps_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getLocation();
+            }
+        });
+
     }
 
     private void init(){
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+       /* Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);*/
         locationText = findViewById(R.id.locationText);
 
 
@@ -85,7 +115,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         //Drawer
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, null, R.string.open_nav_drawer,
                 R.string.close_nav_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -94,6 +124,32 @@ public class action_screen extends AppCompatActivity implements LocationListener
         alertButton = findViewById(R.id.alertButton);
         mapButton = findViewById(R.id.mapButton);
         locationText = findViewById(R.id.locationText);
+        gps_icon = findViewById(R.id.action_screen_gps_icon);
+
+    }
+
+    private void initMap(){
+
+        Log.d(TAG, "initMap: initialising map");
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_actionScreen);
+
+        mapFragment.getMapAsync(action_screen.this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        Log.d(TAG, "onMapReady: map is ready");
+        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+
+        mMap = googleMap;
+
+        if (location_permission_granted)
+        {
+            getLocation();
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
 
     }
 
@@ -117,7 +173,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
         {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
             {
-                Toast.makeText(getApplicationContext(), "Application will not run without location permission", Toast.LENGTH_SHORT).show();
+                location_permission_granted = false;
+                Toast.makeText(getApplicationContext(), "Application will not run without location permission",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else {
+                location_permission_granted = true;
+                initMap();
             }
         }
     }
@@ -129,17 +192,21 @@ public class action_screen extends AppCompatActivity implements LocationListener
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED){
-                getLocation();
+
+                location_permission_granted = true;
+                initMap();
+//                getLocation();
             }
             else {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
-                    Toast.makeText(getApplicationContext(), "Application required to access location", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Application required to location permission", Toast.LENGTH_SHORT).show();
                 }
                 requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION_REQUEST_CODE);
             }
         }
         else {
-            getLocation();
+//            getLocation()
+            initMap();
         }
 
     }
@@ -166,6 +233,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
         messaging();
+
+        moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, "My Location");
 
         location_model location_data=new location_model();
 
@@ -236,6 +305,19 @@ public class action_screen extends AppCompatActivity implements LocationListener
         int check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         return (check == PackageManager.PERMISSION_GRANTED);
 
+    }
+
+    private void moveCamera(LatLng latLng, float zoom, String title){
+
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        if (!title.equals("My Location"))
+        {
+            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
+            mMap.addMarker(markerOptions);
+        }
     }
 
 }
