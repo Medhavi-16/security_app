@@ -1,10 +1,5 @@
 package com.example.womensecurityapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,10 +7,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.util.Printer;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.womensecurityapp.model.location_model;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -25,7 +24,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -36,7 +34,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
@@ -75,7 +72,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
 
-
     }
 
     private void init(){
@@ -93,7 +89,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                location_model location=new location_model();
+                location_model location = new location_model();
                 location=dataSnapshot.getValue(location_model.class);
 
                 set_maker(location);
@@ -105,27 +101,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        mMap.setOnMapClickListener(latLng -> {
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
 
 
-            MarkerOptions markerOptions = new MarkerOptions();
+                MarkerOptions markerOptions = new MarkerOptions();
 
-            // Setting the position for the marker
-            markerOptions.position(latLng);
+                // Setting the position for the marker
+                markerOptions.position(latLng);
 
-            // Setting the title for the marker.
-            // This will be displayed on taping the marker
-            markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+                // Setting the title for the marker.
+                // This will be displayed on taping the marker
+                markerOptions.title(latLng.latitude + " : " + latLng.longitude);
 
-            // Clears the previously touched position
+                // Clears the previously touched position
 
 
-            // Animating to the touched position
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                // Animating to the touched position
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 
-            // Placing a marker on the touched position
-            mMap.addMarker(markerOptions);
+                // Placing a marker on the touched position
+                mMap.addMarker(markerOptions);
 
+            }
         });
 
 
@@ -340,8 +339,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    public void set_maker(location_model maker_location)
-    {
+    public void set_maker(location_model maker_location) {
+
         LatLng latLng=new LatLng(Double.valueOf(maker_location.getLatitude()),Double.valueOf(maker_location.getLongitude()));
 
         // Creating a marker

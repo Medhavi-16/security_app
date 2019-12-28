@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        EditText editText=dialog.findViewById(R.id.new_entry_text);
+         final EditText editText=dialog.findViewById(R.id.new_entry_text);
         Button cancel=dialog.findViewById(R.id.new_entry_cancel);
         Button ok=dialog.findViewById(R.id.new_entry_ok);
 
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
+                 editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
                 DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record_data").child(editText.getText().toString());
 
