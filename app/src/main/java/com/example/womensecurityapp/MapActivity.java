@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,8 +23,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -34,15 +30,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
-import com.google.maps.PendingResult;
-import com.google.maps.internal.PolylineEncoding;
-import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -52,6 +42,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int location_permission_request_code = 1234;
     private static final float DEFAULT_ZOOM = 15f;
     Location currentLocation;
+    DatabaseReference databaseReference_person_location;
 
     // widgets
     private ImageView gps_icon;
@@ -71,6 +62,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         getLocationPermission();
 
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
+        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("person_info")
+                .child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
 
     }
 
@@ -101,36 +94,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-
-                MarkerOptions markerOptions = new MarkerOptions();
-
-                // Setting the position for the marker
-                markerOptions.position(latLng);
-
-                // Setting the title for the marker.
-                // This will be displayed on taping the marker
-                markerOptions.title(latLng.latitude + " : " + latLng.longitude);
-
-                // Clears the previously touched position
-
-
-                // Animating to the touched position
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                // Placing a marker on the touched position
-                mMap.addMarker(markerOptions);
-
-            }
-        });
-
-
     }
 
-    private void add_polyline(final DirectionsResult result)
+  /*  private void add_polyline(final DirectionsResult result)
     {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
@@ -202,10 +168,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Log.e("fgh",e.getMessage());
 
             }
-        });
-    }
-
-
+        });*/
 
     private void getLocationPermission(){
 
@@ -311,6 +274,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             Log.d(TAG, "onComplete: location found");
                             currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
+
+                            location_model location=new location_model();
+                            location.setLongitude(String.valueOf(currentLocation.getLongitude()));
+                            location.setLatitude(String.valueOf(currentLocation.getLatitude()));
+
+                            databaseReference_person_location.setValue(location);
                         }
                         else
                         {
