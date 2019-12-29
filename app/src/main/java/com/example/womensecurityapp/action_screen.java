@@ -1,18 +1,7 @@
 package com.example.womensecurityapp;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,10 +10,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,24 +19,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.example.womensecurityapp.model.location_model;
+import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.services.SMS;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -71,6 +64,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private Boolean location_permission_granted = false;
     LocationManager locationManager;
     DatabaseReference databaseReference_location;
+    DatabaseReference databaseReference_person,databaseReference_person_info;
     private GoogleMap mMap;
 
     @Override
@@ -106,16 +100,17 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     private void init(){
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+       /* Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);*/
         locationText = findViewById(R.id.locationText);
 
 
         databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
+        databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("person_info");
 
         //Drawer
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, null, R.string.open_nav_drawer,
                 R.string.close_nav_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -141,6 +136,63 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         Log.d(TAG, "onMapReady: map is ready");
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+
+
+
+        // to add diffrent persion location into the map
+        databaseReference_person.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (final DataSnapshot postSnapshot : dataSnapshot.getChildren())
+                {
+                    final MarkerOptions[] markerOptions = {null};
+                    final Marker[] marker = new Marker[1];
+
+                    databaseReference_person_info=databaseReference_person.child(postSnapshot.getKey()).child("location");
+
+                    databaseReference_person_info.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
+
+                            location_model location=new location_model();
+                            location=pdataSnapshot.getValue(location_model.class);
+
+
+                            if(markerOptions[0] ==null)
+                            {
+
+                                 markerOptions[0] = new MarkerOptions();
+
+                                LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
+
+                                markerOptions[0].position(latLng);
+
+                                markerOptions[0].title(latLng.latitude + " : " + latLng.longitude);
+
+                                marker[0] =mMap.addMarker(markerOptions[0]);
+
+                            }
+                            else
+                            {
+                                LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
+                                marker[0].setPosition(latLng);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         mMap = googleMap;
 
@@ -232,7 +284,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     public void onLocationChanged(Location location) {
 
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
-        messaging();
+  //      messaging();
 
         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, "My Location");
 
@@ -277,7 +329,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         Toast.makeText(this, "Please enable GPS and Internet", Toast.LENGTH_SHORT).show();
     }
 
-    private void messaging(){
+  /*  private void messaging(){
 
         if (checkSMSpermission() && checkPhoneStatePermission()){
 
@@ -292,7 +344,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
         }
     }
-
+*/
     public boolean checkSMSpermission(){
 
         int check = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
@@ -320,4 +372,28 @@ public class action_screen extends AppCompatActivity implements LocationListener
         }
     }
 
+    public void set_maker(location_model maker_location) {
+
+        LatLng latLng=new LatLng(Double.valueOf(maker_location.getLatitude()),Double.valueOf(maker_location.getLongitude()));
+
+        // Creating a marker
+        MarkerOptions markerOptions = new MarkerOptions();
+
+        // Setting the position for the marker
+        markerOptions.position(latLng);
+
+        // Setting the title for the marker.
+        // This will be displayed on taping the marker
+        markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+
+        // Clears the previously touched position
+
+        mMap.clear();
+
+        // Animating to the touched position
+    //    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        // Placing a marker on the touched position
+        mMap.addMarker(markerOptions);
+    }
 }
