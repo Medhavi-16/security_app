@@ -1,15 +1,7 @@
 package com.example.womensecurityapp.services;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.telephony.SmsManager;
 import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import com.example.womensecurityapp.MainActivity;
 
 public class SMS {
 
