@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/new_entry_ok"
             android:layout_weight="1"
-            android:text="enter"
+            android:text="Next"
             app:rippleColor="@color/colorAccent"
             android:background="@color/colorPrimary"
             app:cornerRadius="30dp" />
