@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">WomenSecurity</string>
-    <string name="google_map_api_key">AIzaSyC2sp6xBLKycQ2tmsn6X1CZ6shIlOXpq2c</string>
+    <string name="google_map_api_key">AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4</string>
 
     <string name="open_nav_drawer">Open navigation drawer</string>
     <string name="close_nav_drawer">Close navigation drawer</string>
     <string name="alert">Alert</string>
     <string name="map">Map</string>
+    <string name="police_station">Police Station</string>
+    <string name="railway_station">Railway Station</string>
+    <string name="airport">Airport</string>
+    <string name="mall">Mall</string>
 </resources>

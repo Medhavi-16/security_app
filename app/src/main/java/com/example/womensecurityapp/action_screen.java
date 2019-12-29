@@ -22,13 +22,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
+import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.SMS;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,12 +50,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
+    public static final String STATUS = "status";
+    public static final String OK = "OK";
+    public static final String GEOMETRY = "geometry";
+    public static final String LOCATION = "location";
+    public static final String LATITUDE = "lat";
+    public static final String LONGITUDE = "lng";
+    public static final String NAME = "name";
+    public static final String VICINITY = "vicinity";
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final float DEFAULT_ZOOM = 15f;
@@ -59,6 +79,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private Button mapButton;
     private TextView locationText;
     private ImageView gps_icon;
+    private Button policeStationButton;
+    private Button railwayStationButton;
+    private Button airportButton;
+    private Button mallButton;
 
     //Variables
     private Boolean location_permission_granted = false;
@@ -66,6 +90,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     DatabaseReference databaseReference_location;
     DatabaseReference databaseReference_person,databaseReference_person_info;
     private GoogleMap mMap;
+    private Location myLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +121,44 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         });
 
+        policeStationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "police";
+                getNearByPlaces(type);
+            }
+        });
+
+        railwayStationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "train_station";
+                getNearByPlaces(type);
+            }
+        });
+
+        airportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "airport";
+                getNearByPlaces(type);
+            }
+        });
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "shopping_mall";
+                getNearByPlaces(type);
+            }
+        });
+
     }
 
     private void init(){
 
-       /* Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         locationText = findViewById(R.id.locationText);
 
 
@@ -110,7 +167,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         //Drawer
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, null, R.string.open_nav_drawer,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
                 R.string.close_nav_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -120,6 +177,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
         mapButton = findViewById(R.id.mapButton);
         locationText = findViewById(R.id.locationText);
         gps_icon = findViewById(R.id.action_screen_gps_icon);
+        policeStationButton = findViewById(R.id.policeStationBtn);
+        railwayStationButton = findViewById(R.id.railwayStationBtn);
+        airportButton = findViewById(R.id.AirportBtn);
+        mapButton = findViewById(R.id.MallBtn);
 
     }
 
@@ -139,7 +200,25 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
 
 
-        // to add diffrent persion location into the map
+        // to add different person location into the map
+        addAllPerson();
+
+        mMap = googleMap;
+
+        if (location_permission_granted)
+        {
+            getLocation();
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.getUiSettings().setCompassEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        }
+
+    }
+
+    private void addAllPerson(){
+
         databaseReference_person.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -155,14 +234,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
                         @Override
                         public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
 
-                            location_model location=new location_model();
+                            location_model location = new location_model();
                             location=pdataSnapshot.getValue(location_model.class);
 
 
                             if(markerOptions[0] ==null)
                             {
 
-                                 markerOptions[0] = new MarkerOptions();
+                                markerOptions[0] = new MarkerOptions();
 
                                 LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
 
@@ -193,15 +272,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
             }
         });
-
-        mMap = googleMap;
-
-        if (location_permission_granted)
-        {
-            getLocation();
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        }
 
     }
 
@@ -283,6 +353,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
     @Override
     public void onLocationChanged(Location location) {
 
+        myLocation = location;
+
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
   //      messaging();
 
@@ -301,8 +373,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
             locationText.setText(locationText.getText()+ "\n" + addresses.get(0).getAddressLine(0) + "\n"
                     + addresses.get(0).getAddressLine(1) + "\n" + addresses.get(0).getAddressLine(2));
-
-
 
         }
         catch (Exception e){
@@ -396,4 +466,100 @@ public class action_screen extends AppCompatActivity implements LocationListener
         // Placing a marker on the touched position
         mMap.addMarker(markerOptions);
     }
+
+    private void getNearByPlaces(String type){
+
+        double latitude = myLocation.getLatitude();
+        double longitude = myLocation.getLongitude();
+
+        StringBuilder googlePlacesUrl =
+                new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
+        googlePlacesUrl.append("&rankby=").append("distance");
+        googlePlacesUrl.append("&types=").append(type);
+        googlePlacesUrl.append("&sensor=true");
+        googlePlacesUrl.append("&key=AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4");
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, googlePlacesUrl.toString(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Result= " + response.toString());
+                        parseLocationResult(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: Error= " + error);
+                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
+                    }
+                });
+
+
+                AppController.getInstance().addToRequestQueue(request);
+
+
+    }
+
+    private void parseLocationResult(JSONObject result) {
+
+        String id, place_id, placeName = null, reference, icon, vicinity = null;
+        double latitude, longitude;
+
+        try {
+            JSONArray jsonArray = result.getJSONArray("results");
+
+            if (result.getString(STATUS).equalsIgnoreCase(OK)) {
+
+                mMap.clear();
+                addAllPerson();
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    JSONObject place = jsonArray.getJSONObject(i);
+
+                    if (!place.isNull(NAME)) {
+                        placeName = place.getString(NAME);
+                    }
+                    if (!place.isNull(VICINITY)) {
+                        vicinity = place.getString(VICINITY);
+                    }
+                    latitude = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
+
+                            .getDouble(LATITUDE);
+                    longitude = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
+
+                            .getDouble(LONGITUDE);
+
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    LatLng latLng = new LatLng(latitude, longitude);
+                    markerOptions.position(latLng);
+                    markerOptions.title(placeName + " : " + vicinity);
+
+                    mMap.addMarker(markerOptions);
+
+                }
+
+                Toast.makeText(getBaseContext(), jsonArray.length() + " found!", Toast.LENGTH_SHORT).show();
+            }
+            else if (result.getString(STATUS).equalsIgnoreCase("ZERO_RESULTS")) {
+                Toast.makeText(getBaseContext(), "Nothing found!", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+            Log.e(TAG, "parseLocationResult: Error=" + e.getMessage());
+        }
+    }
+
 }
+
+
+
+
+
+
+
+

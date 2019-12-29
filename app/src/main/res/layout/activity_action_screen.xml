@@ -29,67 +29,76 @@
             tools:context=".MapsActivity"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:elevation="10dp"
-        android:background="@drawable/white_border"
-        android:id="@+id/relLayout1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:elevation="10dp"
+            android:background="@drawable/white_border"
+            android:id="@+id/relLayout1">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:elevation="4dp"
-            android:theme="@style/MyDarkToolbarStyle"
-            app:popupTheme="@style/MyDarkToolbarStyle" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:elevation="4dp"
+                android:theme="@style/MyDarkToolbarStyle"
+                app:popupTheme="@style/MyDarkToolbarStyle" />
 
 
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@+id/toolbar"
-            android:layout_marginStart="10dp">
-
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/toolbar"
+                android:layout_marginStart="10dp">
 
-                <Button
-                    android:id="@+id/policeStationBtn"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Police Station"/>
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/railwayStationBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Railway Station"/>
+                    <Button
+                        android:id="@+id/policeStationBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:padding="10dp"
+                        android:background="@drawable/button_background"
+                        android:text="@string/police_station"/>
 
-                <Button
-                    android:id="@+id/AirportBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Airport"/>
+                    <Button
+                        android:id="@+id/railwayStationBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:background="@drawable/button_background"
+                        android:padding="10dp"
+                        android:text="@string/railway_station"/>
 
-                <Button
-                    android:id="@+id/MallBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mall"/>
+                    <Button
+                        android:id="@+id/AirportBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/button_background"
+                        android:padding="10dp"
+                        android:text="@string/airport"/>
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/MallBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/button_background"
+                        android:padding="10dp"
+                        android:text="@string/mall"/>
 
-        </ScrollView>
+                </LinearLayout>
 
-    </RelativeLayout>
+            </HorizontalScrollView>
+
+        </RelativeLayout>
 
         <ImageView
             android:layout_width="40dp"
