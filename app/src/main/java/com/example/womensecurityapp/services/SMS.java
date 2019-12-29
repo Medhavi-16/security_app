@@ -13,41 +13,7 @@ import com.example.womensecurityapp.MainActivity;
 
 public class SMS {
 
-    private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final String TAG = "SMS";
-
-  /*  String destPhone;
-    String message;
-
-    public SMS(){
-
-    }
-
-    public SMS(String destPhone, String message){
-
-        this.destPhone = destPhone;
-        this.message = message;
-    }
-
-    public String getDestPhone() {
-        return destPhone;
-    }
-
-    public void setDestPhone(String destPhone) {
-        this.destPhone = destPhone;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-
-
-   */
 
     public void sendSMS(String destPhone, String message){
 
