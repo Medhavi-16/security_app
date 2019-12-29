@@ -164,31 +164,17 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                                  markerOptions[0] = new MarkerOptions();
 
-                                Log.e("dfgh","tfyghj");
                                 LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
 
-                                // Creating a marker
-
-
-                                // Setting the position for the marker
                                 markerOptions[0].position(latLng);
 
-                                // Setting the title for the marker.
-                                // This will be displayed on taping the marker
                                 markerOptions[0].title(latLng.latitude + " : " + latLng.longitude);
 
-                                // Clears the previously touched position
-
-                                // Animating to the touched position
-                                //    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                                // Placing a marker on the touched position
                                 marker[0] =mMap.addMarker(markerOptions[0]);
 
                             }
                             else
                             {
-                                Log.e("resdtgbn","55");
                                 LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
                                 marker[0].setPosition(latLng);
                             }
@@ -199,16 +185,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                         }
                     });
-
-
-
-
-                 /*   person_details details=new person_details();
-                    details=postSnapshot.getValue(person_details.class);
-
-                    Log.e("fgh","hugh");
-                    set_maker(details.getLocation());
-                */}
+                }
             }
 
             @Override
