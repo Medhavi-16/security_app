@@ -273,6 +273,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         {
                             Log.d(TAG, "onComplete: location found");
                             currentLocation = (Location) task.getResult();
+                            assert currentLocation != null;
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM, "My Location");
 
                             location_model location=new location_model();
