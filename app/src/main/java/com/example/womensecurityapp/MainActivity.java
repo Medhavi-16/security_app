@@ -31,7 +31,7 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button actionScreenBtn,new_entry;
+    private Button actionScreenBtn,new_entry,recent_activity;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
 
@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
         // shared preference for info
         // it contains the basic info about the user
+        recent_activity=findViewById(R.id.main_recent_activity);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
-
 
 
         actionScreenBtn = findViewById(R.id.main_actionScreenBtn);
@@ -62,6 +62,24 @@ public class MainActivity extends AppCompatActivity {
 
                 startActivity(new Intent(MainActivity.this, action_screen.class));
                 finish();
+            }
+        });
+
+        recent_activity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!preferences.getString("active", "no").equals("no"))
+                {
+                    Toast.makeText(getApplicationContext(),preferences.getString("active", "no"),Toast.LENGTH_LONG).show();
+                    Intent i=new Intent(getApplicationContext(),MapActivity.class);
+                    startActivity(i);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"You don't have recent activity",Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
@@ -181,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("new_user_name",name.getText().toString());
                 editor.putString("new_user_contact",contact.getText().toString());
                 editor.putString("new_user_counter", String.valueOf(a[0]));
-                editor.apply();
+                editor.putString("active","yes");
+                editor.commit();
 
                 a[0]++;
 
