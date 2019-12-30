@@ -26,6 +26,16 @@
 
     </Button>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/main_recent_activity"
+        android:text="Recent activity">
+
+
+    </Button>
+
 </LinearLayout>
 
 
