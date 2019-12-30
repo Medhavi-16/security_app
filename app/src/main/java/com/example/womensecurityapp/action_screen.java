@@ -5,6 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -41,6 +44,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -72,6 +77,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final float DEFAULT_ZOOM = 15f;
+
+    private String safe_location_FLAG;
 
     //widgets
     private DrawerLayout drawer;
@@ -125,6 +132,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 String type = "police";
+                safe_location_FLAG = type;
                 getNearByPlaces(type);
             }
         });
@@ -133,6 +141,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 String type = "train_station";
+                safe_location_FLAG = type;
                 getNearByPlaces(type);
             }
         });
@@ -141,6 +150,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 String type = "airport";
+                safe_location_FLAG = type;
                 getNearByPlaces(type);
             }
         });
@@ -149,6 +159,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             @Override
             public void onClick(View view) {
                 String type = "shopping_mall";
+                safe_location_FLAG = type;
                 getNearByPlaces(type);
             }
         });
@@ -249,7 +260,9 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                                 markerOptions[0].title(latLng.latitude + " : " + latLng.longitude);
 
-                                marker[0] =mMap.addMarker(markerOptions[0]);
+                                marker[0] =mMap.addMarker(markerOptions[0]
+                                        .icon(bitmapDescriptorFromVector(getApplicationContext(),
+                                                R.drawable.ic_person_pin_circle)));
 
                             }
                             else
@@ -476,7 +489,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
         googlePlacesUrl.append("&rankby=").append("distance");
-        googlePlacesUrl.append("&types=").append(type);
+        googlePlacesUrl.append("&types=").append(safe_location_FLAG);
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4");
 
@@ -537,7 +550,18 @@ public class action_screen extends AppCompatActivity implements LocationListener
                     markerOptions.position(latLng);
                     markerOptions.title(placeName + " : " + vicinity);
 
-                    mMap.addMarker(markerOptions);
+                    if (safe_location_FLAG == "police"){
+                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_security)));
+                    }
+                    else if (safe_location_FLAG == "train_station"){
+                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_train)));
+                    }
+                    else if (safe_location_FLAG == "airport"){
+                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_airport)));
+                    }
+                    else if (safe_location_FLAG == "shopping_mall"){
+                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_store_mall)));
+                    }
 
                 }
 
@@ -552,6 +576,20 @@ public class action_screen extends AppCompatActivity implements LocationListener
             e.printStackTrace();
             Log.e(TAG, "parseLocationResult: Error=" + e.getMessage());
         }
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId){
+
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
 }
