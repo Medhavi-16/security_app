@@ -164,6 +164,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         });
 
+
     }
 
     private void init(){
@@ -215,6 +216,15 @@ public class action_screen extends AppCompatActivity implements LocationListener
         addAllPerson();
 
         mMap = googleMap;
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
 
         if (location_permission_granted)
         {
@@ -562,6 +572,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
                     else if (safe_location_FLAG == "shopping_mall"){
                         mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_store_mall)));
                     }
+
+
 
                 }
 
