@@ -24,7 +24,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC2sp6xBLKycQ2tmsn6X1CZ6shIlOXpq2c"/>
+            android:value="AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4"/>
 
         <activity android:name=".MapActivity"></activity>
         <activity android:name=".action_screen" />
@@ -36,5 +36,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

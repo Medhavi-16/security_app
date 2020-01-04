@@ -39,9 +39,10 @@
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:text="4.5"
+                        android:text="NA"
                         android:textStyle="bold"
                         android:textSize="18dp"
+                        android:id="@+id/action_rating"
                         android:layout_margin="5dp"
                         android:layout_height="wrap_content"
                         >
@@ -54,7 +55,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(13 person)"
+                    android:text=""
+                    android:layout_gravity="center"
+                    android:id="@+id/action_total_no_person"
                     android:layout_margin="2dp"
                     android:textStyle="bold"
                     >
@@ -73,6 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Hazira police station"
+                    android:id="@+id/action_name"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp">
 
@@ -83,6 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
+                    android:id="@+id/action_address"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="A.B. Road, &amp;, Morena Link Road, Char Shahar Ka Naka, Near, Chauraha, Gwalior">
@@ -99,7 +104,7 @@
             android:orientation="horizontal"
             android:layout_margin="10dp"
             >
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="call"
@@ -110,11 +115,9 @@
                 app:strokeColor="@color/Black"
                 android:background="@color/button_red"
                 >
-            </com.google.android.material.button.MaterialButton>
+            </Button>
 
-
-
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Direction"
@@ -126,10 +129,10 @@
                 app:strokeColor="@color/Black"
                 android:background="@color/button_red"
                 >
-            </com.google.android.material.button.MaterialButton>
+            </Button>
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="cancel"
@@ -139,7 +142,7 @@
             app:strokeColor="@color/Black"
             android:background="@color/button_red"
             >
-        </com.google.android.material.button.MaterialButton>
+        </Button>
 
     </LinearLayout>
 
