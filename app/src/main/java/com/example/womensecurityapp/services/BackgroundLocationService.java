@@ -13,17 +13,21 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.example.womensecurityapp.model.location_model;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import static com.example.womensecurityapp.MainActivity.preferences;
 
 
 public class BackgroundLocationService extends Service {
@@ -31,8 +35,10 @@ public class BackgroundLocationService extends Service {
     private static final String TAG = "LocationService";
 
     private FusedLocationProviderClient mFusedLocationClient;
-    private final static long UPDATE_INTERVAL = 4 * 1000;  /* 4 secs */
-    private final static long FASTEST_INTERVAL = 2000; /* 2 sec */
+    private final static long UPDATE_INTERVAL = 4000;
+    private final static long FASTEST_INTERVAL = 2000;
+
+    DatabaseReference databaseReference_person_location;
 
     @Nullable
     @Override
@@ -47,10 +53,9 @@ public class BackgroundLocationService extends Service {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         if (Build.VERSION.SDK_INT >= 26) {
+
             String CHANNEL_ID = "my_channel_01";
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "My Channel",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "My Channel", NotificationManager.IMPORTANCE_DEFAULT);
 
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
 
@@ -90,48 +95,44 @@ public class BackgroundLocationService extends Service {
 
                         Log.d(TAG, "onLocationResult: got location result.");
 
-                        Location location = locationResult.getLastLocation();
+                        Location currentLocation = locationResult.getLastLocation();
 
-                        if (location != null) {
+                        if (currentLocation != null) {
 
-                            Log.d(TAG, "getLocation: " + location.getLatitude() + "/" + location.getLongitude());
-                            Toast.makeText(BackgroundLocationService.this,
-                                    location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-                            /*User user = ((UserClient)(getApplicationContext())).getUser();
-                            GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                            UserLocation userLocation = new UserLocation(user, geoPoint, null);
-                            saveUserLocation(userLocation);*/
+                            Log.d(TAG, "getLocation: " + currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
+
+                            // updating location in firebase
+                            location_model location=new location_model();
+                            location.setLongitude(String.valueOf(currentLocation.getLongitude()));
+                            location.setLatitude(String.valueOf(currentLocation.getLatitude()));
+
+                            databaseReference_person_location= FirebaseDatabase.getInstance().getReference()
+                                    .child("Problem_Record")
+                                    .child("1").child("person")
+                                    .child("person_info")
+                                    .child("person_no_" + preferences.getString("new_user_counter","1"))
+                                    .child("location");
+
+                            databaseReference_person_location.setValue(location);
+
                         }
                     }
                 },
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
     }
 
-    /*private void saveUserLocation(final UserLocation userLocation){
-
-        try{
-            DocumentReference locationRef = FirebaseFirestore.getInstance()
-                    .collection(getString(R.string.collection_user_locations))
-                    .document(FirebaseAuth.getInstance().getUid());
-
-            locationRef.set(userLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        Log.d(TAG, "onComplete: \ninserted user location into database." +
-                                "\n latitude: " + userLocation.getGeo_point().getLatitude() +
-                                "\n longitude: " + userLocation.getGeo_point().getLongitude());
-                    }
-                }
-            });
-        }catch (NullPointerException e){
-            Log.e(TAG, "saveUserLocation: User instance is null, stopping location service.");
-            Log.e(TAG, "saveUserLocation: NullPointerException: "  + e.getMessage() );
-            stopSelf();
-        }
-
-    }*/
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

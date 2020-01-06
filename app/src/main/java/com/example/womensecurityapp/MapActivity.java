@@ -341,7 +341,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void startBackgroundLocationService(){
         if(!isLocationServiceRunning()){
             Intent serviceIntent = new Intent(this, BackgroundLocationService.class);
-        //this.startService(serviceIntent);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
 
@@ -353,7 +352,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private boolean isLocationServiceRunning() {
+
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        assert manager != null;
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
             if("com.example.womensecurityapp.services.BackgroundLocationService".equals(service.service.getClassName())) {
                 Log.d(TAG, "isLocationServiceRunning: location service is already running.");
