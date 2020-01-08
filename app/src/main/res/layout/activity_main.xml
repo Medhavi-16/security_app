@@ -32,8 +32,21 @@
         android:layout_gravity="center"
         android:id="@+id/main_recent_activity"
         android:text="Recent activity">
+    </Button>
 
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/main_start_service"
+        android:text="start service">
+    </Button>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/main_stop_service"
+        android:text="Recent service">
     </Button>
 
 </LinearLayout>

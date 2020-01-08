@@ -16,10 +16,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
+import com.example.womensecurityapp.services.foreground_service;
+import com.example.womensecurityapp.services.shake_service;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.model.Place;
@@ -48,6 +51,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button start_service=findViewById(R.id.main_start_service);
+        Button stop_service=findViewById(R.id.main_stop_service);
+
+        start_service.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent serviceIntent = new Intent(MainActivity.this, foreground_service.class);
+                serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
+
+                ContextCompat.startForegroundService(MainActivity.this, serviceIntent);
+            }
+        });
+        stop_service.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent serviceIntent = new Intent(MainActivity.this, foreground_service.class);
+                stopService(serviceIntent);
+            }
+        });
+
+
 
         // shared preference for info
         // it contains the basic info about the user
