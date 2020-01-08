@@ -20,23 +20,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.PlacesApi;
-import com.google.maps.errors.ApiException;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         recent_activity=findViewById(R.id.main_recent_activity);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
+
 
         actionScreenBtn = findViewById(R.id.main_actionScreenBtn);
         new_entry=findViewById(R.id.main_new_entry);
