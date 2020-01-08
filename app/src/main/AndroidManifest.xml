@@ -37,6 +37,7 @@
         </activity>
 
         <service android:name=".services.BackgroundLocationService" />
+        <service android:name=".services.BackgroundLocationService_Girls" />
     </application>
 
 </manifest>
