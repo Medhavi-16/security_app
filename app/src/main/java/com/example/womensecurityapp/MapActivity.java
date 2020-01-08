@@ -1,6 +1,7 @@
 package com.example.womensecurityapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.womensecurityapp.model.location_model;
+import com.example.womensecurityapp.services.shake_service;
 import com.example.womensecurityapp.services.BackgroundLocationService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -106,7 +108,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void run() {
 
                 for(DirectionsRoute route: result.routes)
-               e{
+                {
                     List<com.google.maps.model.LatLng> decodedpath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
 
                     List<LatLng> newDecodepath =new ArrayList<>();

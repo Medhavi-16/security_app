@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".services.AppController">
+        android:name=".services.App">
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -38,6 +41,7 @@
 
         <service android:name=".services.BackgroundLocationService" />
         <service android:name=".services.BackgroundLocationService_Girls" />
+        <service android:name=".services.shake_service"></service>
+        <service android:name=".services.foreground_service"></service>
     </application>
-
 </manifest>
