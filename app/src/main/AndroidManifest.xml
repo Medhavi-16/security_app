@@ -38,6 +38,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".services.BackgroundLocationService" />
         <service android:name=".services.shake_service"></service>
         <service android:name=".services.foreground_service"></service>
     </application>

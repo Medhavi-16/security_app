@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
 
+
         actionScreenBtn = findViewById(R.id.main_actionScreenBtn);
         new_entry=findViewById(R.id.main_new_entry);
         new_entry.setOnClickListener(new View.OnClickListener() {

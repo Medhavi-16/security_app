@@ -2,6 +2,8 @@ package com.example.womensecurityapp;
 
 import android.Manifest;
 import android.content.Intent;
+import android.app.ActivityManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.shake_service;
+import com.example.womensecurityapp.services.BackgroundLocationService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,13 +64,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-
-
         getLocationPermission();
 
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
-        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("person_info")
-                .child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
+        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person")
+                .child("person_info").child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
 
     }
 
@@ -285,6 +286,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             location.setLatitude(String.valueOf(currentLocation.getLatitude()));
 
                             databaseReference_person_location.setValue(location);
+                            startBackgroundLocationService();
+
                         }
                         else
                         {
@@ -335,6 +338,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Placing a marker on the touched position
         mMap.addMarker(markerOptions);
+    }
+
+    private void startBackgroundLocationService(){
+        if(!isLocationServiceRunning()){
+            Intent serviceIntent = new Intent(this, BackgroundLocationService.class);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+
+                MapActivity.this.startForegroundService(serviceIntent);
+            }else{
+                startService(serviceIntent);
+            }
+        }
+    }
+
+    private boolean isLocationServiceRunning() {
+
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        assert manager != null;
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.example.womensecurityapp.services.BackgroundLocationService".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
     }
 
 }
