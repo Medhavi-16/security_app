@@ -2,6 +2,7 @@ package com.example.womensecurityapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,6 +37,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.AppController;
+import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -369,11 +371,11 @@ public class action_screen extends AppCompatActivity implements LocationListener
         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, "My Location");
 
         location_model location_data=new location_model();
-
         location_data.setLatitude(String.valueOf(location.getLatitude()));
         location_data.setLongitude(String.valueOf(location.getLongitude()));
 
         databaseReference_location.setValue(location_data);
+        startBackgroundLocationService_Girls();
 
         try{
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -384,7 +386,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         }
         catch (Exception e){
-
             e.printStackTrace();
             Log.d(TAG, "OnLocationChanged: error" + e.getMessage());
 
@@ -585,6 +586,35 @@ public class action_screen extends AppCompatActivity implements LocationListener
         vectorDrawable.draw(canvas);
 
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+
+    private void startBackgroundLocationService_Girls(){
+
+        if(!isLocationServiceRunning()){
+            Intent serviceIntent = new Intent(this, BackgroundLocationService_Girls.class);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+
+                action_screen.this.startForegroundService(serviceIntent);
+            }else{
+                startService(serviceIntent);
+            }
+        }
+    }
+
+    private boolean isLocationServiceRunning() {
+
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        assert manager != null;
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.example.womensecurityapp.services.BackgroundLocationService_Girls".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
     }
 
 }
