@@ -28,24 +28,22 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.example.womensecurityapp.MainActivity.preferences;
+public class BackgroundLocationService_Girls extends Service {
 
-
-public class BackgroundLocationService extends Service {
-
-    private static final String TAG = "BackgroundLocationService";
+    private static final String TAG = "BackgroundLocationService_Girls";
 
     private FusedLocationProviderClient mFusedLocationClient;
     private final static long UPDATE_INTERVAL = 4000;
     private final static long FASTEST_INTERVAL = 2000;
 
-    DatabaseReference databaseReference_person_location;
+    DatabaseReference databaseReference_location;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 
     @Override
     public void onCreate() {
@@ -61,7 +59,7 @@ public class BackgroundLocationService extends Service {
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("Person Location Activity")
+                    .setContentTitle("Girl Location Activity")
                     .setContentText("").build();
 
             startForeground(1, notification);
@@ -86,37 +84,35 @@ public class BackgroundLocationService extends Service {
 
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getLocation: stopping the location service.");
+            Log.d(TAG, "getLocationG: stopping the location service.");
             stopSelf();
             return;
         }
 
-        Log.d(TAG, "getLocation: getting location information.");
+        Log.d(TAG, "getLocationG: getting location information.");
         mFusedLocationClient.requestLocationUpdates(mLocationRequestHighAccuracy, new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
 
-                        Log.d(TAG, "onLocationResult: got location result.");
+                        Log.d(TAG, "onLocationResultG: got location result.");
 
                         Location currentLocation = locationResult.getLastLocation();
 
                         if (currentLocation != null) {
 
-                            Log.d(TAG, "getLocation: " + currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
+                            Log.d(TAG, "getLocationG: " + currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
 
                             // updating location in firebase
                             location_model location=new location_model();
                             location.setLongitude(String.valueOf(currentLocation.getLongitude()));
                             location.setLatitude(String.valueOf(currentLocation.getLatitude()));
 
-                            databaseReference_person_location= FirebaseDatabase.getInstance().getReference()
+                            databaseReference_location=FirebaseDatabase.getInstance().getReference()
                                     .child("Problem_Record")
-                                    .child("1").child("person")
-                                    .child("person_info")
-                                    .child("person_no_" + preferences.getString("new_user_counter","1"))
-                                    .child("location");
+                                    .child("1")
+                                    .child("Location");
 
-                            databaseReference_person_location.setValue(location);
+                            databaseReference_location.setValue(location);
 
                         }
                     }
@@ -125,10 +121,6 @@ public class BackgroundLocationService extends Service {
     }
 
 }
-
-
-
-
 
 
 

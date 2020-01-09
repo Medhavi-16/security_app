@@ -1,9 +1,14 @@
 package com.example.womensecurityapp;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -16,36 +21,35 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
 import com.example.womensecurityapp.services.foreground_service;
-import com.example.womensecurityapp.services.shake_service;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.PlacesApi;
-import com.google.maps.errors.ApiException;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final int REQUEST_PERMISSION_CODE = 1000;
+    public static final String TAG = "MainActivity";
 
     private Button actionScreenBtn,new_entry,recent_activity;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
+
+    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn;
+
+    String pathSave = "";
+    MediaRecorder mediaRecorder;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +120,44 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"You don't have recent activity",Toast.LENGTH_LONG).show();
                 }
 
+            }
+        });
+
+        startRecordingBtn = findViewById(R.id.main_startRecording);
+        startRecordingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (checkPermissionFromDevice()){
+                    startRecording();
+                }
+                else {
+                    requestAudioPermission();
+                }
+            }
+        });
+
+        stopRecordingBtn = findViewById(R.id.main_stopRecording);
+        stopRecordingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopRecording();
+            }
+        });
+
+        playRecordingBtn = findViewById(R.id.main_play);
+        playRecordingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playRecording();
+            }
+        });
+
+        stopPlayingBtn = findViewById(R.id.main_stop);
+        stopPlayingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopPlaying();
             }
         });
 
@@ -257,4 +299,111 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setAttributes(lp);
 
     }
+
+    private void requestAudioPermission(){
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CODE);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode){
+
+            case REQUEST_PERMISSION_CODE:{
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+        }
+
+    }
+
+    private boolean checkPermissionFromDevice(){
+
+        int write_external_storage_result = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int record_audio_result = ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+
+        return write_external_storage_result == PackageManager.PERMISSION_GRANTED &&
+                record_audio_result == PackageManager.PERMISSION_GRANTED;
+
+    }
+
+    public void startRecording(){
+
+        pathSave = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                UUID.randomUUID().toString() + "_audio.3gp";
+
+        setupMediaRecorder();
+        try {
+
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+
+        } catch (Exception e) {
+            Log.d(TAG, "onCreate: " + e.getMessage());
+        }
+
+        Toast.makeText(this, "Recording...", Toast.LENGTH_SHORT).show();
+    }
+
+    public void stopRecording(){
+        mediaRecorder.stop();
+    }
+
+    public void playRecording(){
+
+        mediaPlayer = new MediaPlayer();
+        try {
+
+            mediaPlayer.setDataSource(pathSave);
+            mediaPlayer.prepare();
+        }
+        catch (Exception e){
+            Log.d(TAG, "onCreate: " + e.getMessage());
+        }
+
+        mediaPlayer.start();
+        Toast.makeText(this, "Playing...", Toast.LENGTH_SHORT).show();
+    }
+
+    public void stopPlaying(){
+
+        if (mediaPlayer != null)
+        {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            setupMediaRecorder();
+        }
+    }
+
+
+    private void setupMediaRecorder() {
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(pathSave);
+
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
