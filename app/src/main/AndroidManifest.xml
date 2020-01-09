@@ -21,7 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".services.App">
+        android:name=".services.AppController">
 
         <meta-data
             android:name="com.google.android.gms.version"
