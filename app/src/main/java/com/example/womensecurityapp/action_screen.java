@@ -2,6 +2,7 @@ package com.example.womensecurityapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.app.Dialog;
 import android.content.Intent;
@@ -647,7 +648,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         return false;
     }
 
-}
+
     public void popup_window(String counter) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
