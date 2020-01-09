@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,6 +19,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -35,9 +39,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.example.womensecurityapp.model.location_model;
+import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
+import com.example.womensecurityapp.services.SMS;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -95,6 +102,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     DatabaseReference databaseReference_person,databaseReference_person_info;
     private GoogleMap mMap;
     private Location myLocation;
+    JSONArray jsonArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,8 +221,21 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         mMap = googleMap;
 
-        if (location_permission_granted)
-        {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                if (!(marker.getTag() == null)) {
+
+                        popup_window(marker.getTag().toString());
+                        // Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+        });
+
+
+        if (location_permission_granted) {
             getLocation();
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -371,6 +392,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, "My Location");
 
         location_model location_data=new location_model();
+
         location_data.setLatitude(String.valueOf(location.getLatitude()));
         location_data.setLongitude(String.valueOf(location.getLongitude()));
 
@@ -386,6 +408,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         }
         catch (Exception e){
+
             e.printStackTrace();
             Log.d(TAG, "OnLocationChanged: error" + e.getMessage());
 
@@ -506,7 +529,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 });
 
 
-                AppController.getInstance().addToRequestQueue(request);
+        try {
+
+            AppController.getInstance().addToRequestQueue(request);
+        } catch (Exception e) {
+
+            Toast.makeText(getApplicationContext(),"Please wait somthing went wrong",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
 
     }
 
@@ -516,7 +546,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         double latitude, longitude;
 
         try {
-            JSONArray jsonArray = result.getJSONArray("results");
+            jsonArray = result.getJSONArray("results");
 
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
 
@@ -545,18 +575,20 @@ public class action_screen extends AppCompatActivity implements LocationListener
                     markerOptions.position(latLng);
                     markerOptions.title(placeName + " : " + vicinity);
 
-                    if (safe_location_FLAG == "police"){
-                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_security)));
+                    if (safe_location_FLAG == "police") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_security)));
+                        marker.setTag(String.valueOf(i));
+                    } else if (safe_location_FLAG == "train_station") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_train)));
+                        marker.setTag(String.valueOf(i));
+                    } else if (safe_location_FLAG == "airport") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_airport)));
+                        marker.setTag(String.valueOf(i));
+                    } else if (safe_location_FLAG == "shopping_mall") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_store_mall)));
+                        marker.setTag(String.valueOf(i));
                     }
-                    else if (safe_location_FLAG == "train_station"){
-                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_train)));
-                    }
-                    else if (safe_location_FLAG == "airport"){
-                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_airport)));
-                    }
-                    else if (safe_location_FLAG == "shopping_mall"){
-                        mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_store_mall)));
-                    }
+
 
                 }
 
@@ -616,12 +648,57 @@ public class action_screen extends AppCompatActivity implements LocationListener
         return false;
     }
 
+
+    public void popup_window(String counter) {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.police_info_popup);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        TextView name = dialog.findViewById(R.id.action_name);
+        TextView address = dialog.findViewById(R.id.action_address);
+        TextView rating = dialog.findViewById(R.id.action_rating);
+        TextView person = dialog.findViewById(R.id.action_total_no_person);
+
+        JSONObject place = null;
+        try {
+            place = jsonArray.getJSONObject(Integer.parseInt(counter));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!place.isNull(NAME)) {
+                name.setText(place.getString(NAME));
+            }
+
+            if (!place.isNull(VICINITY)) {
+
+                address.setText(place.getString(VICINITY));
+            }
+
+            if (!place.isNull("rating")) {
+                Log.e("aa", String.valueOf(place.getDouble("rating")));
+                rating.setText(place.getString("rating"));
+            }
+
+
+            if (!place.isNull("user_ratings_total")) {
+
+                Log.e("as", String.valueOf(place.getDouble("user_ratings_total")));
+                person.setText("("+place.getString("user_ratings_total")+" person)");
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+            dialog.show();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.getWindow().setAttributes(lp);
+
+
+    }
 }
-
-
-
-
-
-
-
-
