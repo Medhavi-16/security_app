@@ -21,7 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".services.App">
+        android:name=".services.AppController">
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -40,8 +40,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".services.AudioRecording" />
-
         <service android:name=".services.BackgroundLocationService" />
         <service android:name=".services.BackgroundLocationService_Girls" />
         <service android:name=".services.shake_service"></service>

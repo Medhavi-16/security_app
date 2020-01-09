@@ -508,7 +508,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                 AppController.getInstance().addToRequestQueue(request);
 
-
     }
 
     private void parseLocationResult(JSONObject result) {
