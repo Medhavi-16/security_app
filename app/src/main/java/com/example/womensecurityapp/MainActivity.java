@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
 
-    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn;
+    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
 
     String pathSave = "";
     MediaRecorder mediaRecorder;
@@ -56,8 +57,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button start_service=findViewById(R.id.main_start_service);
+        final Button start_service=findViewById(R.id.main_start_service);
         Button stop_service=findViewById(R.id.main_stop_service);
+        new_registration=findViewById(R.id.new_user);
+
+        new_registration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i=new Intent(getApplicationContext(), Signup.class);
+                startActivity(i);
+            }
+        });
 
         start_service.setOnClickListener(new View.OnClickListener() {
             @Override
