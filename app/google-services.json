@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "278097865737-i35k9cj7u9cqeiispguoegb5p41ct12l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.womensecurityapp",
+            "certificate_hash": "552b379b8028ac5f81c8f7fe0e662b7fe6e9b462"
+          }
+        },
+        {
           "client_id": "278097865737-93kfc60nm2bkmr34t0bpg3dcs3va5ik9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

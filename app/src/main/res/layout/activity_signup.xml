@@ -61,4 +61,12 @@
         android:id="@+id/google_auth">
     </com.google.android.gms.common.SignInButton>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/next_page"
+        android:text="next page">
+
+    </Button>
+
 </LinearLayout>

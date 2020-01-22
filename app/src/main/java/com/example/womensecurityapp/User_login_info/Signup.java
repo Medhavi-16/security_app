@@ -39,6 +39,16 @@ public class Signup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        Button next=findViewById(R.id.next_page);
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(getApplicationContext(),Account_setup.class);
+                startActivity(i);
+            }
+        });
+
         auth = FirebaseAuth.getInstance();
         signup = findViewById(R.id.signup);
         id = findViewById(R.id.user_id);
@@ -72,7 +82,7 @@ public class Signup extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
                             Intent i=new Intent(getApplicationContext(),Account_setup.class);
                             startActivity(i);
-                            
+
                         } else {
 
                         }

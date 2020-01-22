@@ -25,33 +25,21 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:id="@+id/name"
+                android:id="@+id/account_name"
                 android:hint="Name">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                 </com.google.android.material.textfield.TextInputEditText>
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:id="@+id/email"
-                android:hint="Email">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
-                </com.google.android.material.textfield.TextInputEditText>
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:id="@+id/phone_no"
+                android:id="@+id/account_phone_no"
                 android:hint="Contact No.">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -64,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:id="@+id/house_no"
+                android:id="@+id/account_house_no"
                 android:hint="House no">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -77,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:id="@+id/street_name"
+                android:id="@+id/account_street_name"
                 android:hint="Street Name">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -91,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:id="@+id/city_name"
+                android:id="@+id/account_city_name"
                 android:hint="City">
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -106,7 +94,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/submit"
+        android:id="@+id/account_submit"
         android:text="Submit"/>
 
 </LinearLayout>
