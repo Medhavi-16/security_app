@@ -115,13 +115,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         });
 
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(action_screen.this, MapActivity.class));
-            }
-        });
-
         gps_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,7 +179,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         // init widgets
         alertButton = findViewById(R.id.alertButton);
-        mapButton = findViewById(R.id.mapButton);
         locationText = findViewById(R.id.locationText);
         gps_icon = findViewById(R.id.action_screen_gps_icon);
         policeStationButton = findViewById(R.id.policeStationBtn);

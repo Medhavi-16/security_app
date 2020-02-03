@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="15dp"
+        android:text="personal Information">
+
+    </TextView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:strokeWidth="3dp"
+        android:layout_margin="5dp"
+        app:strokeColor="@color/Black">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="my_name"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:textSize="20dp">
+
+            </TextView>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="room no.--- boys hostelbekar college gwalior"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:textSize="20dp">
+
+            </TextView>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="90XXXXXXXX"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:textSize="20dp">
+
+            </TextView>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        >
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="call"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            app:cornerRadius="20dp"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/Black"
+            android:background="@color/button_red"
+            >
+        </Button>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Direction"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            app:cornerRadius="20dp"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/Black"
+            android:background="@color/button_red"
+            >
+        </Button>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="cancel"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        app:strokeWidth="3dp"
+        app:strokeColor="@color/Black"
+        android:background="@color/button_red"
+        >
+    </Button>
+
+</LinearLayout>
