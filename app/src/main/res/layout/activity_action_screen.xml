@@ -9,6 +9,17 @@
     android:background="@color/colorBackground"
     android:fitsSystemWindows="true"
     tools:context=".action_screen">
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="">
+
+        </TextView>
+    </HorizontalScrollView>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

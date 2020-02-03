@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.shake_service;
 import com.example.womensecurityapp.services.BackgroundLocationService;
@@ -392,6 +395,40 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        final TextView name=dialog.findViewById(R.id.person_girl_name);
+        final TextView address=dialog.findViewById(R.id.person_girl_address);
+        final TextView contact=dialog.findViewById(R.id.person_girl_contact);
+        Button cancel =dialog.findViewById(R.id.person_girl_cancel);
+
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Person_info").child("1").child("User_info").child("personal_info");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                User_residential_details person=new User_residential_details();
+                person=dataSnapshot.getValue(User_residential_details.class);
+
+                name.setText(person.getName());
+                address.setText(person.getHouse_no()+" "+person.getStreet()+" "+person.getCity()+" "+person.getCountry());
+                contact.setText(person.getContact_no());
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+            }
+        });
 
 
         dialog.show();
