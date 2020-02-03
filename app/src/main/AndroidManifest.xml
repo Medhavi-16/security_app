@@ -22,7 +22,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".User_login_info.Signup"></activity>
+        <activity android:name=".services.notification_genrater"></activity>
+        <activity android:name=".User_login_info.Trusted_person" />
+        <activity android:name=".User_login_info.Signup" />
         <activity android:name=".User_login_info.Account_setup" />
 
         <meta-data
@@ -42,12 +44,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".services.AudioRecording" />
+
         <service android:name=".services.notification">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <service android:name=".services.BackgroundLocationService" />
         <service android:name=".services.BackgroundLocationService_Girls" />
         <service android:name=".services.shake_service" />

@@ -32,6 +32,7 @@ import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
 import com.example.womensecurityapp.services.foreground_service;
+import com.example.womensecurityapp.services.notification_genrater;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
 
-    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
+    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration,notification;
 
     String pathSave = "";
     MediaRecorder mediaRecorder;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager=getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel1);
         }
+
         FirebaseMessaging.getInstance().subscribeToTopic("hello")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -80,6 +82,17 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        notification=findViewById(R.id.notification_window);
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i=new Intent(getApplicationContext(), notification_genrater.class);
+                startActivity(i);
+            }
+        });
 
         final Button start_service=findViewById(R.id.main_start_service);
         Button stop_service=findViewById(R.id.main_stop_service);
