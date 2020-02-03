@@ -47,6 +47,7 @@
         android:layout_gravity="center"
         android:id="@+id/main_stop_service"
         android:text="Stop Service">
+        android:text="Stop service">
     </Button>
 
     <Button
