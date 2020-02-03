@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -49,9 +51,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_PERMISSION_CODE = 1000;
     public static final String TAG = "MainActivity";
 
+    public static final int RC_PIC_CODE = 101;
+
     private Button actionScreenBtn,new_entry,recent_activity;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
+    private Button camera;
 
     private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration,notification;
 
@@ -82,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        camera = findViewById(R.id.main_camera);
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                capture();
+            }
+        });
 
         notification=findViewById(R.id.notification_window);
 
@@ -441,6 +454,32 @@ public class MainActivity extends AppCompatActivity {
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(pathSave);
 
+    }
+
+    private void capture(){
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra("android.intent.extra.quickCapture", true);
+        startActivityForResult(cameraIntent, RC_PIC_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_PIC_CODE){
+            if (resultCode == RESULT_OK){
+
+                Toast.makeText(this, "Photo Clicked", Toast.LENGTH_SHORT).show();
+
+            }
+            else if(resultCode == RESULT_CANCELED){
+
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+
+            }
+        }
     }
 
 }

@@ -94,6 +94,13 @@
         android:text="Notification">
     </Button>
 
+    <Button
+        android:id="@+id/main_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera"
+        android:layout_gravity="center"/>
+
 </LinearLayout>
 
 
