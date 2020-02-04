@@ -1,16 +1,136 @@
 package com.example.womensecurityapp.Report;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.womensecurityapp.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-public class ProblemReport extends AppCompatActivity {
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+public class ProblemReport extends AppCompatActivity implements LocationListener {
+
+    private static final String TAG = "ProblemReport";
+    private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
+
+    private RecyclerView recyclerView;
+    private AdapterReport adapterReport;
+    List<ModelReport> modelReportList;
+
+    LocationManager locationManager;
+    Location myLocation;
+    DatabaseReference databaseReferenceReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem_report);
+
+        recyclerView = findViewById(R.id.report_recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        databaseReferenceReport = FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                .child("1").child("Report");
+
+        requestLocationPermission();
+
+    }
+
+    private void requestLocationPermission(){
+
+        Log.d(TAG, "requestLocationPermission: requesting location permission");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED){
+
+                getDeviceLocation();
+            }
+            else {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+                    Toast.makeText(getApplicationContext(), "Application required to location permission", Toast.LENGTH_SHORT).show();
+                }
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        }
+        else {
+            getDeviceLocation();
+        }
+
+    }
+
+    private void getDeviceLocation(){
+
+        Log.d(TAG, "getDeviceLocation: fetching device location");
+        try{
+            locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
+        }
+        catch (SecurityException e){
+            Log.d(TAG, "getDeviceLocation: error");
+        }
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        myLocation = location;
+        ModelReport modelReport = new ModelReport();
+        modelReport.setLatitude(String.valueOf(location.getLatitude()));
+        modelReport.setLongitude(String.valueOf(location.getLongitude()));
+
+        try{
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            List<Address> address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            modelReport.setPlace(address.get(0).getLocality());
+        }
+        catch (Exception e){
+            Log.d(TAG, "onLocationChanged: error");
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
+        String time = simpleDateFormat.format(calendar.getTime());
+        modelReport.setTime(time);
+
+        databaseReferenceReport.setValue(modelReport);
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        Toast.makeText(this, "Please enable GPS and Internet", Toast.LENGTH_SHORT).show();
     }
 }
