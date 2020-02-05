@@ -123,7 +123,6 @@
                 android:text="Direction"
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
-                style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                 app:cornerRadius="20dp"
                 app:strokeWidth="3dp"
                 app:strokeColor="@color/Black"

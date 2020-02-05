@@ -1,6 +1,7 @@
 package com.example.womensecurityapp;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.app.ActivityManager;
 import android.content.Intent;
@@ -9,7 +10,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.shake_service;
 import com.example.womensecurityapp.services.BackgroundLocationService;
@@ -27,6 +33,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -69,6 +76,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
         databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person")
                 .child("person_info").child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
+
 
     }
 
@@ -338,6 +346,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Placing a marker on the touched position
         mMap.addMarker(markerOptions);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                girl_info_popup();
+
+                return false;
+            }
+        });
     }
 
     private void startBackgroundLocationService(){
@@ -365,6 +383,57 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         Log.d(TAG, "isLocationServiceRunning: location service is not running.");
         return false;
+    }
+    public void girl_info_popup()
+    {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.new_person_girl_popup);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        final TextView name=dialog.findViewById(R.id.person_girl_name);
+        final TextView address=dialog.findViewById(R.id.person_girl_address);
+        final TextView contact=dialog.findViewById(R.id.person_girl_contact);
+        Button cancel =dialog.findViewById(R.id.person_girl_cancel);
+
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Person_info").child("1").child("User_info").child("personal_info");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                User_residential_details person=new User_residential_details();
+                person=dataSnapshot.getValue(User_residential_details.class);
+
+                name.setText(person.getName());
+                address.setText(person.getHouse_no()+" "+person.getStreet()+" "+person.getCity()+" "+person.getCountry());
+                contact.setText(person.getContact_no());
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setAttributes(lp);
     }
 
 }
