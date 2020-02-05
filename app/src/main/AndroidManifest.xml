@@ -7,25 +7,34 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".services.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".services.notification_genrater"></activity>
+        <activity android:name=".User_login_info.Trusted_person" />
+        <activity android:name=".User_login_info.Signup" />
+        <activity android:name=".User_login_info.Account_setup" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC2sp6xBLKycQ2tmsn6X1CZ6shIlOXpq2c"/>
+            android:value="AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4" />
 
-        <activity android:name=".MapActivity"></activity>
+        <activity android:name=".MapActivity" />
         <activity android:name=".action_screen" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -34,6 +43,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".services.AudioRecording" />
+
+        <service android:name=".services.notification">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".services.BackgroundLocationService" />
+        <service android:name=".services.BackgroundLocationService_Girls" />
+        <service android:name=".services.shake_service" />
+        <service android:name=".services.foreground_service" />
     </application>
 
 </manifest>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:strokeColor="@color/Black"
+    app:strokeWidth="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/ic_star_black_24dp"
+            >
+        </ImageView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="NA"
+                        android:textStyle="bold"
+                        android:textSize="18dp"
+                        android:id="@+id/action_rating"
+                        android:layout_margin="5dp"
+                        android:layout_height="wrap_content"
+                        >
+
+                    </TextView>
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_gravity="center"
+                    android:id="@+id/action_total_no_person"
+                    android:layout_margin="2dp"
+                    android:textStyle="bold"
+                    >
+
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hazira police station"
+                    android:id="@+id/action_name"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp">
+
+                </TextView>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:id="@+id/action_address"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="A.B. Road, &amp;, Morena Link Road, Char Shahar Ka Naka, Near, Chauraha, Gwalior">
+
+                </TextView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="10dp"
+            >
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="call"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                app:cornerRadius="20dp"
+                app:strokeWidth="3dp"
+                app:strokeColor="@color/Black"
+                android:background="@color/button_red"
+                >
+            </Button>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Direction"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                app:cornerRadius="20dp"
+                app:strokeWidth="3dp"
+                app:strokeColor="@color/Black"
+                android:background="@color/button_red"
+                >
+            </Button>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="cancel"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/Black"
+            android:background="@color/button_red"
+            >
+        </Button>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

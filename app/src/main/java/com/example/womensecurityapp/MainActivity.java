@@ -1,10 +1,19 @@
 package com.example.womensecurityapp;
 
+import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -15,36 +24,128 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
+import com.example.womensecurityapp.services.foreground_service;
+import com.example.womensecurityapp.services.notification_genrater;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.Arrays;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button actionScreenBtn,new_entry;
+    public static final int REQUEST_PERMISSION_CODE = 1000;
+    public static final String TAG = "MainActivity";
+
+    public static final int RC_PIC_CODE = 101;
+
+    private Button actionScreenBtn,new_entry,recent_activity;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
+    private Button camera;
+
+    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration,notification;
+
+    String pathSave = "";
+    MediaRecorder mediaRecorder;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel1=new NotificationChannel("mynotification","mynotification", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager manager=getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel1);
+        }
+
+        FirebaseMessaging.getInstance().subscribeToTopic("hello")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "ok";
+                        if (!task.isSuccessful()) {
+                            msg = "not";
+                        }
+                    }
+                });
+
+        camera = findViewById(R.id.main_camera);
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                capture();
+            }
+        });
+
+        notification=findViewById(R.id.notification_window);
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i=new Intent(getApplicationContext(), notification_genrater.class);
+                startActivity(i);
+            }
+        });
+
+        final Button start_service=findViewById(R.id.main_start_service);
+        Button stop_service=findViewById(R.id.main_stop_service);
+        new_registration=findViewById(R.id.new_user);
+
+        new_registration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i=new Intent(getApplicationContext(), Signup.class);
+                startActivity(i);
+            }
+        });
+
+        start_service.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent serviceIntent = new Intent(MainActivity.this, foreground_service.class);
+                serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
+
+                ContextCompat.startForegroundService(MainActivity.this, serviceIntent);
+            }
+        });
+        stop_service.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent serviceIntent = new Intent(MainActivity.this, foreground_service.class);
+                stopService(serviceIntent);
+            }
+        });
+
+
+
         // shared preference for info
         // it contains the basic info about the user
+        recent_activity=findViewById(R.id.main_recent_activity);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
-
 
 
         actionScreenBtn = findViewById(R.id.main_actionScreenBtn);
@@ -62,6 +163,62 @@ public class MainActivity extends AppCompatActivity {
 
                 startActivity(new Intent(MainActivity.this, action_screen.class));
                 finish();
+            }
+        });
+
+        recent_activity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!preferences.getString("active", "no").equals("no"))
+                {
+                    Toast.makeText(getApplicationContext(),preferences.getString("active", "no"),Toast.LENGTH_LONG).show();
+                    Intent i=new Intent(getApplicationContext(),MapActivity.class);
+                    startActivity(i);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"You don't have recent activity",Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        startRecordingBtn = findViewById(R.id.main_startRecording);
+        startRecordingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (checkPermissionFromDevice()){
+                    startRecording();
+                }
+                else {
+                    requestAudioPermission();
+                }
+            }
+        });
+
+        stopRecordingBtn = findViewById(R.id.main_stopRecording);
+        stopRecordingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopRecording();
+            }
+        });
+
+        playRecordingBtn = findViewById(R.id.main_play);
+        playRecordingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playRecording();
+            }
+        });
+
+        stopPlayingBtn = findViewById(R.id.main_stop);
+        stopPlayingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopPlaying();
             }
         });
 
@@ -181,7 +338,8 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("new_user_name",name.getText().toString());
                 editor.putString("new_user_contact",contact.getText().toString());
                 editor.putString("new_user_counter", String.valueOf(a[0]));
-                editor.apply();
+                editor.putString("active","yes");
+                editor.commit();
 
                 a[0]++;
 
@@ -202,4 +360,137 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setAttributes(lp);
 
     }
+
+    private void requestAudioPermission(){
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CODE);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode){
+
+            case REQUEST_PERMISSION_CODE:{
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+        }
+
+    }
+
+    private boolean checkPermissionFromDevice(){
+
+        int write_external_storage_result = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int record_audio_result = ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+
+        return write_external_storage_result == PackageManager.PERMISSION_GRANTED &&
+                record_audio_result == PackageManager.PERMISSION_GRANTED;
+
+    }
+
+    public void startRecording(){
+
+        pathSave = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                UUID.randomUUID().toString() + "_audio.3gp";
+
+        setupMediaRecorder();
+        try {
+
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+
+        } catch (Exception e) {
+            Log.d(TAG, "onCreate: " + e.getMessage());
+        }
+
+        Toast.makeText(this, "Recording...", Toast.LENGTH_SHORT).show();
+    }
+
+    public void stopRecording(){
+        mediaRecorder.stop();
+    }
+
+    public void playRecording(){
+
+        mediaPlayer = new MediaPlayer();
+        try {
+
+            mediaPlayer.setDataSource(pathSave);
+            mediaPlayer.prepare();
+        }
+        catch (Exception e){
+            Log.d(TAG, "onCreate: " + e.getMessage());
+        }
+
+        mediaPlayer.start();
+        Toast.makeText(this, "Playing...", Toast.LENGTH_SHORT).show();
+    }
+
+    public void stopPlaying(){
+
+        if (mediaPlayer != null)
+        {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            setupMediaRecorder();
+        }
+    }
+
+
+    private void setupMediaRecorder() {
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(pathSave);
+
+    }
+
+    private void capture(){
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra("android.intent.extra.quickCapture", true);
+        startActivityForResult(cameraIntent, RC_PIC_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_PIC_CODE){
+            if (resultCode == RESULT_OK){
+
+                Toast.makeText(this, "Photo Clicked", Toast.LENGTH_SHORT).show();
+
+            }
+            else if(resultCode == RESULT_CANCELED){
+
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+

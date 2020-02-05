@@ -2,9 +2,14 @@ package com.example.womensecurityapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -14,6 +19,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,18 +29,24 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
-import com.example.womensecurityapp.model.person_details;
-import com.example.womensecurityapp.services.SMS;
+import com.example.womensecurityapp.services.AppController;
+import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,15 +56,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Locale;
 
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
+    public static final String STATUS = "status";
+    public static final String OK = "OK";
+    public static final String GEOMETRY = "geometry";
+    public static final String LOCATION = "location";
+    public static final String LATITUDE = "lat";
+    public static final String LONGITUDE = "lng";
+    public static final String NAME = "name";
+    public static final String VICINITY = "vicinity";
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final float DEFAULT_ZOOM = 15f;
+
+    private String safe_location_FLAG;
 
     //widgets
     private DrawerLayout drawer;
@@ -59,6 +86,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private Button mapButton;
     private TextView locationText;
     private ImageView gps_icon;
+    private Button policeStationButton;
+    private Button railwayStationButton;
+    private Button airportButton;
+    private Button mallButton;
 
     //Variables
     private Boolean location_permission_granted = false;
@@ -66,6 +97,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
     DatabaseReference databaseReference_location;
     DatabaseReference databaseReference_person,databaseReference_person_info;
     private GoogleMap mMap;
+    private Location myLocation;
+    JSONArray jsonArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +129,48 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         });
 
+        policeStationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "police";
+                safe_location_FLAG = type;
+                getNearByPlaces(type);
+            }
+        });
+
+        railwayStationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "train_station";
+                safe_location_FLAG = type;
+                getNearByPlaces(type);
+            }
+        });
+
+        airportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "airport";
+                safe_location_FLAG = type;
+                getNearByPlaces(type);
+            }
+        });
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String type = "shopping_mall";
+                safe_location_FLAG = type;
+                getNearByPlaces(type);
+            }
+        });
+
     }
 
     private void init(){
 
-       /* Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         locationText = findViewById(R.id.locationText);
 
 
@@ -110,7 +179,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         //Drawer
         drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, null, R.string.open_nav_drawer,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
                 R.string.close_nav_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -120,6 +189,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
         mapButton = findViewById(R.id.mapButton);
         locationText = findViewById(R.id.locationText);
         gps_icon = findViewById(R.id.action_screen_gps_icon);
+        policeStationButton = findViewById(R.id.policeStationBtn);
+        railwayStationButton = findViewById(R.id.railwayStationBtn);
+        airportButton = findViewById(R.id.AirportBtn);
+        mapButton = findViewById(R.id.MallBtn);
 
     }
 
@@ -139,7 +212,38 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
 
 
-        // to add diffrent persion location into the map
+        // to add different person location into the map
+        addAllPerson();
+
+        mMap = googleMap;
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                if (!(marker.getTag() == null)) {
+
+                        popup_window(marker.getTag().toString());
+                        // Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+        });
+
+
+        if (location_permission_granted) {
+            getLocation();
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            mMap.getUiSettings().setCompassEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        }
+
+    }
+
+    private void addAllPerson(){
+
         databaseReference_person.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -155,40 +259,28 @@ public class action_screen extends AppCompatActivity implements LocationListener
                         @Override
                         public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
 
-                            location_model location=new location_model();
+                            location_model location = new location_model();
                             location=pdataSnapshot.getValue(location_model.class);
 
 
                             if(markerOptions[0] ==null)
                             {
 
-                                 markerOptions[0] = new MarkerOptions();
+                                markerOptions[0] = new MarkerOptions();
 
-                                Log.e("dfgh","tfyghj");
                                 LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
 
-                                // Creating a marker
-
-
-                                // Setting the position for the marker
                                 markerOptions[0].position(latLng);
 
-                                // Setting the title for the marker.
-                                // This will be displayed on taping the marker
                                 markerOptions[0].title(latLng.latitude + " : " + latLng.longitude);
 
-                                // Clears the previously touched position
-
-                                // Animating to the touched position
-                                //    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                                // Placing a marker on the touched position
-                                marker[0] =mMap.addMarker(markerOptions[0]);
+                                marker[0] =mMap.addMarker(markerOptions[0]
+                                        .icon(bitmapDescriptorFromVector(getApplicationContext(),
+                                                R.drawable.ic_person_pin_circle)));
 
                             }
                             else
                             {
-                                Log.e("resdtgbn","55");
                                 LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
                                 marker[0].setPosition(latLng);
                             }
@@ -199,16 +291,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                         }
                     });
-
-
-
-
-                 /*   person_details details=new person_details();
-                    details=postSnapshot.getValue(person_details.class);
-
-                    Log.e("fgh","hugh");
-                    set_maker(details.getLocation());
-                */}
+                }
             }
 
             @Override
@@ -216,15 +299,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
             }
         });
-
-        mMap = googleMap;
-
-        if (location_permission_granted)
-        {
-            getLocation();
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        }
 
     }
 
@@ -306,6 +380,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
     @Override
     public void onLocationChanged(Location location) {
 
+        myLocation = location;
+
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
   //      messaging();
 
@@ -317,6 +393,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         location_data.setLongitude(String.valueOf(location.getLongitude()));
 
         databaseReference_location.setValue(location_data);
+        startBackgroundLocationService_Girls();
 
         try{
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -324,8 +401,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
             locationText.setText(locationText.getText()+ "\n" + addresses.get(0).getAddressLine(0) + "\n"
                     + addresses.get(0).getAddressLine(1) + "\n" + addresses.get(0).getAddressLine(2));
-
-
 
         }
         catch (Exception e){
@@ -368,6 +443,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         }
     }
 */
+
     public boolean checkSMSpermission(){
 
         int check = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
@@ -418,5 +494,208 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         // Placing a marker on the touched position
         mMap.addMarker(markerOptions);
+    }
+
+    private void getNearByPlaces(String type){
+
+        double latitude = myLocation.getLatitude();
+        double longitude = myLocation.getLongitude();
+
+        StringBuilder googlePlacesUrl =
+                new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
+        googlePlacesUrl.append("&rankby=").append("distance");
+        googlePlacesUrl.append("&types=").append(safe_location_FLAG);
+        googlePlacesUrl.append("&sensor=true");
+        googlePlacesUrl.append("&key=AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4");
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, googlePlacesUrl.toString(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: Result= " + response.toString());
+                        parseLocationResult(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: Error= " + error);
+                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
+                    }
+                });
+
+
+        try {
+
+            AppController.getInstance().addToRequestQueue(request);
+        } catch (Exception e) {
+
+            Toast.makeText(getApplicationContext(),"Please wait somthing went wrong",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+
+    }
+
+    private void parseLocationResult(JSONObject result) {
+
+        String id, place_id, placeName = null, reference, icon, vicinity = null;
+        double latitude, longitude;
+
+        try {
+            jsonArray = result.getJSONArray("results");
+
+            if (result.getString(STATUS).equalsIgnoreCase(OK)) {
+
+                mMap.clear();
+                addAllPerson();
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    JSONObject place = jsonArray.getJSONObject(i);
+
+                    if (!place.isNull(NAME)) {
+                        placeName = place.getString(NAME);
+                    }
+                    if (!place.isNull(VICINITY)) {
+                        vicinity = place.getString(VICINITY);
+                    }
+                    latitude = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
+
+                            .getDouble(LATITUDE);
+                    longitude = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
+
+                            .getDouble(LONGITUDE);
+
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    LatLng latLng = new LatLng(latitude, longitude);
+                    markerOptions.position(latLng);
+                    markerOptions.title(placeName + " : " + vicinity);
+
+                    if (safe_location_FLAG == "police") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_security)));
+                        marker.setTag(String.valueOf(i));
+                    } else if (safe_location_FLAG == "train_station") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_train)));
+                        marker.setTag(String.valueOf(i));
+                    } else if (safe_location_FLAG == "airport") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_airport)));
+                        marker.setTag(String.valueOf(i));
+                    } else if (safe_location_FLAG == "shopping_mall") {
+                        Marker marker = mMap.addMarker(markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_store_mall)));
+                        marker.setTag(String.valueOf(i));
+                    }
+
+
+                }
+
+                Toast.makeText(getBaseContext(), jsonArray.length() + " found!", Toast.LENGTH_SHORT).show();
+            }
+            else if (result.getString(STATUS).equalsIgnoreCase("ZERO_RESULTS")) {
+                Toast.makeText(getBaseContext(), "Nothing found!", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+            Log.e(TAG, "parseLocationResult: Error=" + e.getMessage());
+        }
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId){
+
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+
+    private void startBackgroundLocationService_Girls(){
+
+        if(!isLocationServiceRunning()){
+            Intent serviceIntent = new Intent(this, BackgroundLocationService_Girls.class);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+
+                action_screen.this.startForegroundService(serviceIntent);
+            }else{
+                startService(serviceIntent);
+            }
+        }
+    }
+
+    private boolean isLocationServiceRunning() {
+
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        assert manager != null;
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.example.womensecurityapp.services.BackgroundLocationService_Girls".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
+    }
+
+
+    public void popup_window(String counter) {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.police_info_popup);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        TextView name = dialog.findViewById(R.id.action_name);
+        TextView address = dialog.findViewById(R.id.action_address);
+        TextView rating = dialog.findViewById(R.id.action_rating);
+        TextView person = dialog.findViewById(R.id.action_total_no_person);
+
+        JSONObject place = null;
+        try {
+            place = jsonArray.getJSONObject(Integer.parseInt(counter));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!place.isNull(NAME)) {
+                name.setText(place.getString(NAME));
+            }
+
+            if (!place.isNull(VICINITY)) {
+
+                address.setText(place.getString(VICINITY));
+            }
+
+            if (!place.isNull("rating")) {
+                Log.e("aa", String.valueOf(place.getDouble("rating")));
+                rating.setText(place.getString("rating"));
+            }
+
+
+            if (!place.isNull("user_ratings_total")) {
+
+                Log.e("as", String.valueOf(place.getDouble("user_ratings_total")));
+                person.setText("("+place.getString("user_ratings_total")+" person)");
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+            dialog.show();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.getWindow().setAttributes(lp);
+
+
     }
 }
