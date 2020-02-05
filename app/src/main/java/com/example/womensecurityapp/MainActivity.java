@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -24,18 +23,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.womensecurityapp.Report.ProblemReport;
 import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
 import com.example.womensecurityapp.services.foreground_service;
-import com.example.womensecurityapp.services.notification_genrater;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -60,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private Button camera;
     private Button report;
 
-    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration,notification;
+    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
 
     String pathSave = "";
     MediaRecorder mediaRecorder;
@@ -90,33 +86,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        report = findViewById(R.id.main_report);
-        report.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent reportIntent = new Intent(getApplicationContext(), ProblemReport.class);
-                startActivity(reportIntent);
-            }
-        });
-
-        camera = findViewById(R.id.main_camera);
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                capture();
-            }
-        });
-
-        notification=findViewById(R.id.notification_window);
-
-        notification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent i=new Intent(getApplicationContext(), notification_genrater.class);
-                startActivity(i);
-            }
-        });
 
         final Button start_service=findViewById(R.id.main_start_service);
         Button stop_service=findViewById(R.id.main_stop_service);
@@ -468,41 +437,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void capture(){
-
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra("android.intent.extra.quickCapture", true);
-        startActivityForResult(cameraIntent, RC_PIC_CODE);
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_PIC_CODE){
-            if (resultCode == RESULT_OK){
-
-                Toast.makeText(this, "Photo Clicked", Toast.LENGTH_SHORT).show();
-
-            }
-            else if(resultCode == RESULT_CANCELED){
-
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
-
-            }
-        }
-    }
-
 }
-
-
-
-
-
-
-
-
-
-
-
