@@ -198,8 +198,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
         locationText = findViewById(R.id.locationText);
 
 
-        databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
-        databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("person_info");
+        databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                .child("1").child("Location");
+        databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                .child("1").child("person").child("person_info");
 
 /*        //Drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -232,8 +234,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
         Log.d(TAG, "onMapReady: map is ready");
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
-
-
 
         // to add different person location into the map
         addAllPerson();
@@ -367,7 +367,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                 location_permission_granted = true;
                 initMap();
-//                getLocation();
             }
             else {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
@@ -377,7 +376,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         }
         else {
-//            getLocation()
             initMap();
         }
 

@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
     private Button camera;
+    private Button report;
 
     private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
 
@@ -203,8 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void new_entry_track()
-    {
+    public void new_entry_track() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
         dialog.setContentView(R.layout.new_user_track_request_popup);
@@ -233,7 +233,8 @@ public class MainActivity extends AppCompatActivity {
 
                  editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record_data").child(editText.getText().toString());
+                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record_data")
+                        .child(editText.getText().toString());
 
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -265,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setAttributes(lp);
     }
+
     public void new_user_info()
     {
         final Dialog dialog = new Dialog(this);
