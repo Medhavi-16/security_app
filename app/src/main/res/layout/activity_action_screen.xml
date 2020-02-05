@@ -146,7 +146,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="police"
+                            android:textColor="@color/Black"
+                            android:text="Police"
                             android:layout_gravity="center"
                             android:layout_margin="5dp">
 
@@ -174,6 +175,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_margin="5dp"
+                            android:textColor="@color/Black"
                             android:text="Railway">
 
                         </TextView>
@@ -199,6 +201,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
+                            android:textColor="@color/Black"
                             android:layout_gravity="center"
                             android:text="Airport">
 
@@ -224,6 +227,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_margin="5dp"
+                            android:textColor="@color/Black"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="Shopping">

@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +23,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.womensecurityapp.adapter.trusted_person_adapter;
+import com.example.womensecurityapp.model.Trusted_person_model;
 import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.shake_service;
 import com.example.womensecurityapp.services.BackgroundLocationService;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,6 +48,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.GeoApiContext;
 
+import java.util.ArrayList;
+
 import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -55,6 +61,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final float DEFAULT_ZOOM = 15f;
     Location currentLocation;
     DatabaseReference databaseReference_person_location;
+    FloatingActionMenu notice,trusted;
 
     // widgets
     private ImageView gps_icon;
@@ -70,6 +77,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        trusted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         getLocationPermission();
 
@@ -434,6 +448,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setAttributes(lp);
+    }
+
+    public void trusted_perason()
+    {
+
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.trusted_person_popup);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        ArrayList<Trusted_person_model> person=new ArrayList<>();
+
+        ListView listView=dialog.findViewById(R.id.trusted_person_popup_list);
+
+        person.add(new Trusted_person_model("ankit", "21458", "ankijs", "ujusdb","hfi"));
+        trusted_person_adapter myAdapter = new trusted_person_adapter(getApplicationContext(), R.layout.trusted_person_model, person);
+        listView.setAdapter(myAdapter);
+
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setAttributes(lp);
+
     }
 
 }
