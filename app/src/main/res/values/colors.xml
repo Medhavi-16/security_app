@@ -7,4 +7,5 @@
     <color name="Alert_red">#CF0F15</color>
     <color name="button_red">#F7ADAF</color>
     <color name="Black">#2C2C2C</color>
+    <color name="bg_line">#87CEEE</color>
 </resources>
