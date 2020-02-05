@@ -13,16 +13,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.womensecurityapp.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +42,6 @@ public class ProblemReport extends AppCompatActivity implements LocationListener
     List<ModelReport> modelReportList;
 
     LocationManager locationManager;
-    Location myLocation;
     DatabaseReference databaseReferenceReport;
 
     @Override
@@ -48,6 +52,8 @@ public class ProblemReport extends AppCompatActivity implements LocationListener
         recyclerView = findViewById(R.id.report_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        modelReportList = new ArrayList<>();
 
         databaseReferenceReport = FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                 .child("1").child("Report");
@@ -96,7 +102,6 @@ public class ProblemReport extends AppCompatActivity implements LocationListener
     @Override
     public void onLocationChanged(Location location) {
 
-        myLocation = location;
         ModelReport modelReport = new ModelReport();
         modelReport.setLatitude(String.valueOf(location.getLatitude()));
         modelReport.setLongitude(String.valueOf(location.getLongitude()));
@@ -115,7 +120,9 @@ public class ProblemReport extends AppCompatActivity implements LocationListener
         String time = simpleDateFormat.format(calendar.getTime());
         modelReport.setTime(time);
 
-        databaseReferenceReport.setValue(modelReport);
+        databaseReferenceReport.push().setValue(modelReport);
+
+        makeTimelineReport();
 
     }
 
@@ -133,4 +140,35 @@ public class ProblemReport extends AppCompatActivity implements LocationListener
     public void onProviderDisabled(String s) {
         Toast.makeText(this, "Please enable GPS and Internet", Toast.LENGTH_SHORT).show();
     }
+
+    private void makeTimelineReport(){
+
+        Log.d(TAG, "makeTimelineReport: called");
+
+        databaseReferenceReport.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                modelReportList.clear();
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+
+                    ModelReport modelReport = ds.getValue(ModelReport.class);
+                    modelReportList.add(modelReport);
+
+                    adapterReport = new AdapterReport(getApplicationContext(), modelReportList);
+                    recyclerView.setAdapter(adapterReport);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Log.d(TAG,"makeTimelineReport: Something went wrong");
+            }
+        });
+
+    }
+
 }
