@@ -92,6 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_gps"
+                android:id="@+id/float_resend"
                 fab:fab_size="mini"
                 app:fab_label="Resend Alert" />
 
@@ -100,6 +101,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_gps"
                 fab:fab_size="mini"
+                android:id="@+id/float_picture"
                 app:fab_label="Take Picture" />
 
             <com.github.clans.fab.FloatingActionButton
@@ -107,79 +109,128 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_gps"
                 fab:fab_size="mini"
+                android:id="@+id/float_other"
                 app:fab_label="other Info" />
 
-        </com.github.clans.fab.FloatingActionMenu>
+           </com.github.clans.fab.FloatingActionMenu>
 
-        <RelativeLayout
+          <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
+            android:layout_height="100dp"
             android:elevation="10dp"
             android:background="@drawable/white_border"
             android:id="@+id/relLayout1">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:elevation="4dp"
-                android:theme="@style/MyDarkToolbarStyle"
-                app:popupTheme="@style/MyDarkToolbarStyle" />
-
-
-            <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toEndOf="@+id/toolbar"
-                android:layout_marginStart="10dp">
-
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Button
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:id="@+id/policeStationBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:padding="10dp"
-                        android:background="@drawable/button_background"
-                        android:text="@string/police_station"/>
+                        android:orientation="vertical">
 
-                    <Button
+                        <ImageView
+                            android:layout_margin="5dp"
+                            android:layout_width="50dp"
+                            android:layout_gravity="center"
+                            android:layout_height="50dp"
+                            android:background="@drawable/police_float"
+                            >
+                        </ImageView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="police"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:id="@+id/railwayStationBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:background="@drawable/button_background"
-                        android:padding="10dp"
-                        android:text="@string/railway_station"/>
+                        android:orientation="vertical">
 
-                    <Button
+                        <ImageView
+                            android:layout_margin="5dp"
+                            android:layout_width="50dp"
+                            android:layout_gravity="center"
+                            android:layout_height="50dp"
+                            android:background="@drawable/train_float"
+                            >
+                        </ImageView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:text="Railway">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:id="@+id/AirportBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:background="@drawable/button_background"
-                        android:padding="10dp"
-                        android:text="@string/airport"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <Button
+                        <ImageView
+                            android:layout_margin="5dp"
+                            android:layout_width="50dp"
+                            android:layout_gravity="center"
+                            android:layout_height="50dp"
+                            android:background="@drawable/airport_float"
+                            >
+                        </ImageView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_gravity="center"
+                            android:text="Airport">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:id="@+id/MallBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:background="@drawable/button_background"
-                        android:padding="10dp"
-                        android:text="@string/mall"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
+                        <ImageView
+                            android:layout_margin="5dp"
+                            android:layout_width="50dp"
+                            android:layout_gravity="center"
+                            android:layout_height="50dp"
+                            android:background="@drawable/mall_float"
+                            >
+                        </ImageView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Shopping">
+
+                        </TextView>
+                    </LinearLayout>
                 </LinearLayout>
-
-            </HorizontalScrollView>
-
         </RelativeLayout>
 
         <ImageView
@@ -192,6 +243,7 @@
             android:scaleType="centerCrop"
             android:id="@+id/action_screen_gps_icon"
             android:src="@drawable/ic_gps"/>
+
 
     </RelativeLayout>
 

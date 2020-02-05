@@ -17,16 +17,19 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -41,6 +44,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
+import com.example.womensecurityapp.services.notification_generator;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -79,17 +84,18 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private static final float DEFAULT_ZOOM = 15f;
 
     private String safe_location_FLAG;
+    public static final int RC_PIC_CODE = 101;
 
     //widgets
     private DrawerLayout drawer;
     private Button alertButton;
-    private Button mapButton;
+    private LinearLayout mapButton;
     private TextView locationText;
     private ImageView gps_icon;
-    private Button policeStationButton;
-    private Button railwayStationButton;
-    private Button airportButton;
-    private Button mallButton;
+    private LinearLayout policeStationButton;
+    private LinearLayout railwayStationButton;
+    private LinearLayout airportButton;
+    private LinearLayout mallButton;
 
     //Variables
     private Boolean location_permission_granted = false;
@@ -99,11 +105,34 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private GoogleMap mMap;
     private Location myLocation;
     JSONArray jsonArray;
+    FloatingActionButton camera,resend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_action_screen);
+
+        camera=findViewById(R.id.float_picture);
+        resend=findViewById(R.id.float_resend);
+
+        resend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                notification_generator n=new notification_generator();
+                n.send_notification("main","body",getApplicationContext());
+            }
+        });
+
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                cameraIntent.putExtra("android.intent.extra.quickCapture", true);
+                startActivityForResult(cameraIntent, RC_PIC_CODE);
+            }
+        });
 
         init();
         requestLocationPermission();
@@ -128,6 +157,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 String type = "police";
                 safe_location_FLAG = type;
                 getNearByPlaces(type);
+                Toast.makeText(getApplicationContext(),"police",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -137,6 +167,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 String type = "train_station";
                 safe_location_FLAG = type;
                 getNearByPlaces(type);
+                Toast.makeText(getApplicationContext(),"police",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -146,6 +177,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 String type = "airport";
                 safe_location_FLAG = type;
                 getNearByPlaces(type);
+                Toast.makeText(getApplicationContext(),"police",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -155,6 +187,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 String type = "shopping_mall";
                 safe_location_FLAG = type;
                 getNearByPlaces(type);
+                Toast.makeText(getApplicationContext(),"police",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -162,20 +195,18 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     private void init(){
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         locationText = findViewById(R.id.locationText);
 
 
         databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
         databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("person_info");
 
-        //Drawer
+/*        //Drawer
         drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
                 R.string.close_nav_drawer);
         drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        toggle.syncState();*/
 
         // init widgets
         alertButton = findViewById(R.id.alertButton);
