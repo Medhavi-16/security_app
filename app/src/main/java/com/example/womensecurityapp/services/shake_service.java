@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.womensecurityapp.action_screen;
+
 public class shake_service extends Service implements SensorEventListener {
 
     public final int MIN_TIME_BETWEEN_SHAKES = 3000;
@@ -70,9 +72,8 @@ public class shake_service extends Service implements SensorEventListener {
 
                         Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
 
-
-                    //    Toast.makeText(getApplicationContext(),"no",Toast.LENGTH_LONG).show();
-
+                    notification_generator n=new notification_generator();
+                    n.send_notification("main","body",getApplicationContext());
                 }
             }
         }
