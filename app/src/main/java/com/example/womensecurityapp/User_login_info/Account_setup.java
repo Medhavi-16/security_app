@@ -1,7 +1,9 @@
 package com.example.womensecurityapp.User_login_info;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -12,8 +14,12 @@ import com.example.womensecurityapp.R;
 import com.example.womensecurityapp.model.User_residential_details;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Account_setup extends AppCompatActivity {
 
@@ -47,8 +53,25 @@ public class Account_setup extends AppCompatActivity {
                 profile.setCountry("India");
 
 
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Person_info").child("1").child("User_info").child("personal_info");
-                databaseReference.setValue(profile);
+                final DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                databaseReference.child("Personal_info").setValue(profile);
+                FirebaseDatabase.getInstance().getReference().child("City-Records").child(city.getEditText().getText().toString().toUpperCase()).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(contact.getEditText().getText().toString());
+               databaseReference.child("Trusted_person").child("count").addListenerForSingleValueEvent(new ValueEventListener() {
+                   @Override
+                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       if(!dataSnapshot.exists())
+                           databaseReference.child("Trusted_person").child("count").setValue("0");
+                   }
+
+                   @Override
+                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                   }
+               });
+
+
+                Intent i=new Intent(Account_setup.this,Trusted_person.class);
+                startActivity(i);
             }
         });
 
