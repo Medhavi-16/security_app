@@ -125,7 +125,11 @@ public class Signup extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.e("123", "signInWithCredential:success");
+                            Toast.makeText(getApplicationContext(),FirebaseAuth.getInstance().getCurrentUser().getEmail().toString(),Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+                            //Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
+                            Intent i=new Intent(getApplicationContext(),Account_setup.class);
+                            startActivity(i);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("123", "signInWithCredential:failure", task.getException());
