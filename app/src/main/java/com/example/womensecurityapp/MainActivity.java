@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences.Editor editor;
 
     private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
-
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -75,6 +74,16 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager manager=getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel1);
         }
+
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
+        {
+            NotificationChannel channel2=new NotificationChannel("Gwalior","Gwalior", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager manager=getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel2);
+        }
+
+
 
         FirebaseMessaging.getInstance().subscribeToTopic("hello")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

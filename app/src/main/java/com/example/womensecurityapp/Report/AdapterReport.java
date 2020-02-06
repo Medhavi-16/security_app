@@ -81,25 +81,3 @@ public class AdapterReport extends RecyclerView.Adapter<AdapterReport.ViewHolder
     }
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
