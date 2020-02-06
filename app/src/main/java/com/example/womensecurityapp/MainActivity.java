@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.womensecurityapp.Report.ProblemReport;
 import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     public static SharedPreferences.Editor editor;
 
     private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
+    private Button reportButton;
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -211,6 +213,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stopPlaying();
+            }
+        });
+
+        reportButton = findViewById(R.id.reportButton);
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ProblemReport.class);
+                startActivity(intent);
+
             }
         });
 
