@@ -49,12 +49,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
 
     public static final int RC_PIC_CODE = 101;
+    private static final int STORAGE_REQUEST_CODE = 200;
+
+    private String[] storagePermissions;
 
     private Button actionScreenBtn,new_entry,recent_activity;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
-    private Button camera;
-    private Button report;
 
     private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
 
@@ -85,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        requestStoragePermission();
 
 
         final Button start_service=findViewById(R.id.main_start_service);
@@ -142,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 startActivity(new Intent(MainActivity.this, action_screen.class));
-                finish();
             }
         });
 
@@ -435,6 +438,10 @@ public class MainActivity extends AppCompatActivity {
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(pathSave);
 
+    }
+
+    private void requestStoragePermission(){
+        requestPermissions(storagePermissions, STORAGE_REQUEST_CODE);
     }
 
 }

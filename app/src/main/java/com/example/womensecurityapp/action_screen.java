@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -30,9 +32,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -55,11 +55,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,9 +87,10 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final float DEFAULT_ZOOM = 15f;
+    private static final int IMAGE_PICK_CAMERA_CODE = 300;
 
     private String safe_location_FLAG;
-    public static final int RC_PIC_CODE = 101;
+    private String storagePath = "users_problem_photo_imgs/ ";
 
     //widgets
     private DrawerLayout drawer;
@@ -106,6 +112,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private Location myLocation;
     JSONArray jsonArray;
     FloatingActionButton camera,resend;
+    private Uri image_uri = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,10 +135,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraIntent.putExtra("android.intent.extra.quickCapture", true);
-                startActivityForResult(cameraIntent, RC_PIC_CODE);
+                pickFromCamera();
             }
         });
 
@@ -719,4 +724,106 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
 
     }
+
+    private void pickFromCamera(){
+
+        try {
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "Temp Pic");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
+
+            // put image uri
+            image_uri = this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            // intent to start camera
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
+            cameraIntent.putExtra("android.intent.extra.quickCapture",true);
+            startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+        }
+        catch (Exception e){
+            Log.d(TAG, "pickFromCamera: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        // this method will be called after picking image from camera
+        if (resultCode == RESULT_OK){
+
+            if (requestCode == IMAGE_PICK_CAMERA_CODE){
+                uploadImageToFirebase();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void uploadImageToFirebase(){
+
+//        String filePath = storagePath + "" + "" + "1";
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("1");
+        storageReference.putFile(image_uri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        Log.d(TAG, "uploadProfileCoverPhoto: Successful");
+                        Toast.makeText(action_screen.this, "Image uploaded", Toast.LENGTH_SHORT).show();
+                        /*// image is uploaded to storage now gets its url and store it in user database
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                        while (!uriTask.isSuccessful());
+
+                        Uri downloadUri = uriTask.getResult();
+
+                        if (uriTask.isSuccessful()){
+
+                            //image uploaded  add or update url in database
+
+                            *//*HashMap<String, Object> results = new HashMap<>();
+                            results.put(profileOrCover, downloadUri.toString());
+
+                            databaseReference.child(user.getUid()).updateChildren(results)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+
+                                            Toast.makeText(action_screen.this, "Image Updated...", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            Toast.makeText(action_screen.this, "Error: updating image...", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });*//*
+
+                        }
+                        else {
+                            Toast.makeText(action_screen.this, "Something error occurred", Toast.LENGTH_SHORT).show();
+                        }*/
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Toast.makeText(action_screen.this, "Something wrong happened " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "uploadImageToFirebase: OnFailure: " + e.getMessage());
+                    }
+                });
+
+    }
+
 }
+
+
+
+
+
+
+
