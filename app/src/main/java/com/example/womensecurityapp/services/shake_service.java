@@ -1,5 +1,6 @@
 package com.example.womensecurityapp.services;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +15,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.womensecurityapp.action_screen;
+import static com.example.womensecurityapp.MainActivity.editor;
+import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class shake_service extends Service implements SensorEventListener {
+
+    private static final String TAG = "shake_service";
 
     public final int MIN_TIME_BETWEEN_SHAKES = 3000;
     SensorManager sensorManager = null;
@@ -70,19 +74,49 @@ public class shake_service extends Service implements SensorEventListener {
                 if (acceleration > shakeThreshold) {
                     lastShakeTime = curTime;
 
-                        Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
+                    if(!preferences.getString("is_shake_happened","not_known").equals("yes")) {
 
-                    notification_generator n=new notification_generator();
-                    n.send_notification("main","body",getApplicationContext());
+                        Toast.makeText(getApplicationContext(),"problem is creating..",Toast.LENGTH_LONG).show();
+
+                        if (!isLocationServiceRunning()) {
+                            Intent serviceIntent = new Intent(this, BackgroundLocationService_Girls.class);
+
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+                                getApplicationContext().startForegroundService(serviceIntent);
+                            } else {
+                                startService(serviceIntent);
+                            }
+
+                            editor.putString("is_shake_happened","yes");
+                            editor.commit();
+                        }
+                    }
+
+                    else
+                        Toast.makeText(getApplicationContext(),"problem already created",Toast.LENGTH_LONG).show();
                 }
             }
         }
-
-
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    private boolean isLocationServiceRunning() {
+
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        assert manager != null;
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if("com.example.womensecurityapp.services.BackgroundLocationService_Girls".equals(service.service.getClassName())) {
+                Log.d(TAG, "isLocationServiceRunning: location service is already running.");
+                return true;
+            }
+        }
+        Log.d(TAG, "isLocationServiceRunning: location service is not running.");
+        return false;
+    }
+
 }

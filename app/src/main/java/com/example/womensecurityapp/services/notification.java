@@ -13,7 +13,7 @@ public class notification extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        NotificationCompat.Builder builder=new NotificationCompat.Builder(this,"mynotification")
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(this,"Gwalior")
                 .setContentTitle(remoteMessage.getData().get("title"))
                 .setSmallIcon(R.drawable.ic_security)
                 .setContentText(remoteMessage.getData().get("message"))
@@ -23,6 +23,4 @@ public class notification extends FirebaseMessagingService {
         managerCompat.notify(999,builder.build());
 
     }
-
-
 }
