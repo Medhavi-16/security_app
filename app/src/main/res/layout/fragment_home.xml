@@ -37,7 +37,7 @@
             <com.google.android.material.button.MaterialButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Share location"
+                android:text="Share Location"
                 android:padding="10dp"
                 android:fontFamily="monospace"
                 android:textSize="30sp"
@@ -55,7 +55,7 @@
                 android:textSize="30sp"
                 app:cornerRadius="25dp"
                 app:backgroundTint="@color/quantum_pinkA400"
-                android:id="@+id/type3"/>
+                android:id="@+id/help"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.button.MaterialButton

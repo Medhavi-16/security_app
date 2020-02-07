@@ -36,8 +36,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -91,7 +89,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
     public static final String NAME = "name";
     public static final String VICINITY = "vicinity";
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
-    private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final float DEFAULT_ZOOM = 15f;
     private static final int IMAGE_PICK_CAMERA_CODE = 300;
 
@@ -99,7 +96,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private String storagePath = "users_problem_photo_imgs/ ";
 
     //widgets
-    private DrawerLayout drawer;
+
     private Button alertButton;
     private LinearLayout mapButton;
     private TextView locationText;
@@ -219,12 +216,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
         databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                 .child("1").child("person").child("person_info");
 
-/*        //Drawer
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
-                R.string.close_nav_drawer);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();*/
 
         // init widgets
         alertButton = findViewById(R.id.alertButton);
@@ -261,7 +252,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
             public boolean onMarkerClick(Marker marker) {
 
                 if (!(marker.getTag() == null)) {
-
                         popup_window(marker.getTag().toString());
                 }
                 return false;
@@ -338,6 +328,11 @@ public class action_screen extends AppCompatActivity implements LocationListener
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
@@ -449,37 +444,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
     @Override
     public void onProviderDisabled(String s) {
         Toast.makeText(this, "Please enable GPS and Internet", Toast.LENGTH_SHORT).show();
-    }
-
-  /*  private void messaging(){
-
-        if (checkSMSpermission() && checkPhoneStatePermission()){
-
-            String destPhone = "9024923695";
-            String message = locationText.getText().toString();
-
-            SMS smsObject = new SMS();
-            smsObject.sendSMS(destPhone, message);
-
-        }
-        else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
-        }
-    }
-*/
-
-    public boolean checkSMSpermission(){
-
-        int check = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
-        return (check == PackageManager.PERMISSION_GRANTED);
-
-    }
-
-    public boolean checkPhoneStatePermission(){
-
-        int check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-        return (check == PackageManager.PERMISSION_GRANTED);
-
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title){
@@ -771,39 +735,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                         Log.d(TAG, "uploadProfileCoverPhoto: Successful");
                         Toast.makeText(action_screen.this, "Image uploaded", Toast.LENGTH_SHORT).show();
-                        /*// image is uploaded to storage now gets its url and store it in user database
-                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!uriTask.isSuccessful());
 
-                        Uri downloadUri = uriTask.getResult();
-
-                        if (uriTask.isSuccessful()){
-
-                            //image uploaded  add or update url in database
-
-                            *//*HashMap<String, Object> results = new HashMap<>();
-                            results.put(profileOrCover, downloadUri.toString());
-
-                            databaseReference.child(user.getUid()).updateChildren(results)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-
-                                            Toast.makeText(action_screen.this, "Image Updated...", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            Toast.makeText(action_screen.this, "Error: updating image...", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });*//*
-
-                        }
-                        else {
-                            Toast.makeText(action_screen.this, "Something error occurred", Toast.LENGTH_SHORT).show();
-                        }*/
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

@@ -242,6 +242,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+        startActivity(intent);
+        finish();
+
     }
 
     public void new_entry_track() {
