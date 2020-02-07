@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Person Successfully Added"/>
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Person Successfully Added"
+        android:textSize="30sp"
+        android:layout_margin="8dp"
+        android:textAlignment="center" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
     <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Add More"
+        android:textAllCaps="true"
+        app:backgroundTint="@color/pink"
+        android:layout_weight="1"
+        android:layout_margin="8dp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-smallcaps"
+       style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+
         android:id="@+id/more"
         android:layout_gravity="center"/>
     <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Proceed"
         android:id="@+id/proceed"
-        android:layout_gravity="center"/>
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:fontFamily="sans-serif-smallcaps"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        app:backgroundTint="@color/pink"/>
+    </LinearLayout>
+
 </LinearLayout>
