@@ -48,7 +48,6 @@
         android:layout_gravity="center"
         android:id="@+id/main_stop_service"
         android:text="Stop Service">
-        android:text="Stop service">
     </Button>
 
     <Button
@@ -86,6 +85,20 @@
         android:id="@+id/new_user"
         android:text="New user registration">
     </Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Report"
+        android:id="@+id/reportButton"/>
+
+    <Button
+        android:id="@+id/shareLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Share Location"/>
 
 
 </LinearLayout>

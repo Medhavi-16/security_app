@@ -9,6 +9,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
@@ -27,6 +29,13 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import static com.example.womensecurityapp.MainActivity.editor;
+import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class BackgroundLocationService_Girls extends Service {
 
@@ -102,6 +111,24 @@ public class BackgroundLocationService_Girls extends Service {
 
                             Log.d(TAG, "getLocationG: " + currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
 
+
+                            if (!preferences.getString("is_notification_send","not_known").equals("yes"))
+                            {
+                                Log.e("value",preferences.getString("is_notification_send","not_known"));
+                                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                                try {
+                                    List<Address> address = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                                    notification_generator n=new notification_generator();
+                                    n.send_notification("main",address.get(0).getLocality(),getApplicationContext());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                editor.putString("is_notification_send","yes");
+                                editor.commit();
+                            }
+
+
                             // updating location in firebase
                             location_model location=new location_model();
                             location.setLongitude(String.valueOf(currentLocation.getLongitude()));
@@ -120,14 +147,5 @@ public class BackgroundLocationService_Girls extends Service {
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
     }
 
+
 }
-
-
-
-
-
-
-
-
-
-
