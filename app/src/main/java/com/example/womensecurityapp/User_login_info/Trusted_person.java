@@ -88,7 +88,7 @@ public class Trusted_person extends AppCompatActivity {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT ;
         dialog.setCancelable(true);
         more=dialog.findViewById(R.id.more);
         proceed=dialog.findViewById(R.id.proceed);
