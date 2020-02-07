@@ -44,6 +44,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
+import com.example.womensecurityapp.services.foreground_service;
 import com.example.womensecurityapp.services.notification_generator;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -145,7 +146,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
         alertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getLocation();
+                // stop Background location service girl
+                Intent intent = new Intent(action_screen.this, BackgroundLocationService_Girls.class);
+                stopService(intent);
+
+                //stop shake service
+                Intent shakeIntent = new Intent(action_screen.this, foreground_service.class);
+                stopService(shakeIntent);
+
             }
         });
 
@@ -200,8 +208,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     private void init(){
 
-        locationText = findViewById(R.id.locationText);
-
 
         databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                 .child("1").child("Location");
@@ -250,9 +256,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             public boolean onMarkerClick(Marker marker) {
 
                 if (!(marker.getTag() == null)) {
-
                         popup_window(marker.getTag().toString());
-                        // Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
                 }
                 return false;
             }

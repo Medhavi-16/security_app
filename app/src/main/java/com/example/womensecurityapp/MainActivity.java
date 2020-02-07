@@ -32,6 +32,7 @@ import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
+import com.example.womensecurityapp.services.SMS;
 import com.example.womensecurityapp.services.foreground_service;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int RC_PIC_CODE = 101;
     private static final int STORAGE_REQUEST_CODE = 200;
+    private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
     private String[] storagePermissions;
 
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
     private Button reportButton;
+    private Button shareLocationButton;
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         final Button start_service=findViewById(R.id.main_start_service);
         Button stop_service=findViewById(R.id.main_stop_service);
+
         new_registration=findViewById(R.id.new_user);
 
         new_registration.setOnClickListener(new View.OnClickListener() {
@@ -223,6 +227,14 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, ProblemReport.class);
                 startActivity(intent);
 
+            }
+        });
+
+        shareLocationButton = findViewById(R.id.shareLocation);
+        shareLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                messaging();
             }
         });
 
@@ -463,6 +475,36 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestStoragePermission(){
         requestPermissions(storagePermissions, STORAGE_REQUEST_CODE);
+    }
+
+      private void messaging(){
+
+        if (checkSMSpermission() && checkPhoneStatePermission()){
+
+            String destPhone = "6265105303";
+            String message = "Hello";
+
+            SMS smsObject = new SMS();
+            smsObject.sendSMS(destPhone, message);
+
+        }
+        else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
+        }
+    }
+
+    public boolean checkSMSpermission(){
+
+        int check = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+        return (check == PackageManager.PERMISSION_GRANTED);
+
+    }
+
+    public boolean checkPhoneStatePermission(){
+
+        int check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        return (check == PackageManager.PERMISSION_GRANTED);
+
     }
 
 }
