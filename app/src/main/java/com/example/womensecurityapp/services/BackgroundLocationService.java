@@ -62,7 +62,8 @@ public class BackgroundLocationService extends Service {
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle("Person Location Activity")
-                    .setContentText("").build();
+                    .setContentText("app running in back ground")
+                    .build();
 
             startForeground(1, notification);
         }

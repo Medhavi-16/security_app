@@ -45,11 +45,10 @@
                 app:backgroundTint="@color/quantum_amber700"
                 android:id="@+id/type1"
                 android:layout_margin="10dp"/>
-
             <com.google.android.material.button.MaterialButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Need Help"
+                android:text="NEEd help"
                 android:layout_margin="10dp"
                 android:padding="10dp"
                 android:fontFamily="monospace"

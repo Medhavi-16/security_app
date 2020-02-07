@@ -32,7 +32,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
@@ -40,6 +42,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
+import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
 import com.example.womensecurityapp.services.foreground_service;
@@ -72,6 +75,8 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.womensecurityapp.MainActivity.tag_service;
+
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
@@ -91,6 +96,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private String storagePath = "users_problem_photo_imgs/ ";
 
     //widgets
+
     private Button alertButton;
     private LinearLayout mapButton;
     private TextView locationText;
@@ -275,14 +281,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
                     final MarkerOptions[] markerOptions = {null};
                     final Marker[] marker = new Marker[1];
 
-                    databaseReference_person_info=databaseReference_person.child(postSnapshot.getKey()).child("location");
+                    databaseReference_person_info=databaseReference_person.child(postSnapshot.getKey());
 
                     databaseReference_person_info.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
 
-                            location_model location = new location_model();
-                            location=pdataSnapshot.getValue(location_model.class);
+                            person_details person=new person_details();
+                            person=pdataSnapshot.getValue(person_details.class);
 
 
                             if(markerOptions[0] ==null)
@@ -290,20 +296,20 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                                 markerOptions[0] = new MarkerOptions();
 
-                                LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
+                                LatLng latLng = new LatLng(Double.valueOf(person.getLocation().getLatitude()), Double.valueOf(person.getLocation().getLongitude()));
 
                                 markerOptions[0].position(latLng);
 
-                                markerOptions[0].title(latLng.latitude + " : " + latLng.longitude);
+                                markerOptions[0].title("NAME: "+person.getInfo().getName()+"\nContact: "+person.getInfo().getContact());
+
 
                                 marker[0] =mMap.addMarker(markerOptions[0]
                                         .icon(bitmapDescriptorFromVector(getApplicationContext(),
                                                 R.drawable.ic_person_pin_circle)));
-
                             }
                             else
                             {
-                                LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
+                                LatLng latLng = new LatLng(Double.valueOf(person.getLocation().getLatitude()), Double.valueOf(person.getLocation().getLongitude()));
                                 marker[0].setPosition(latLng);
                             }
                         }
@@ -396,6 +402,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
         myLocation = location;
 
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
+  //      messaging();
 
         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, "My Location");
 
@@ -741,12 +748,21 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 });
 
     }
+    public void person_info_dilog(Double aDouble)
+    {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.person_info_popup);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        TextView name=dialog.findViewById(R.id.person_info_name);
+        TextView contact=dialog.findViewById(R.id.person_info_contact);
+
+    }
 
 }
-
-
-
-
-
-
-

@@ -1,9 +1,8 @@
 package com.example.womensecurityapp;
 
 import android.Manifest;
-import android.app.Dialog;
-import android.content.Intent;
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -27,9 +26,8 @@ import com.example.womensecurityapp.adapter.trusted_person_adapter;
 import com.example.womensecurityapp.model.Trusted_person_model;
 import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
-import com.example.womensecurityapp.services.shake_service;
 import com.example.womensecurityapp.services.BackgroundLocationService;
-import com.github.clans.fab.FloatingActionMenu;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,7 +59,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final float DEFAULT_ZOOM = 15f;
     Location currentLocation;
     DatabaseReference databaseReference_person_location;
-    FloatingActionMenu notice,trusted;
+    FloatingActionButton notice,trusted;
 
     // widgets
     private ImageView gps_icon;
@@ -78,10 +76,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        trusted=findViewById(R.id.map_float_notice_board);
+
         trusted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                trusted_perason();
             }
         });
 
@@ -463,11 +464,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        ArrayList<Trusted_person_model> person=new ArrayList<>();
+        final ArrayList<Trusted_person_model> person=new ArrayList<>();
 
         ListView listView=dialog.findViewById(R.id.trusted_person_popup_list);
 
-        person.add(new Trusted_person_model("ankit", "21458", "ankijs", "ujusdb","hfi"));
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Users").child("RO9P5BwxjQazx9XUeZ4dsufdTny1").child("Trusted_person").child("Info");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (final DataSnapshot postSnapshot : dataSnapshot.getChildren())
+                {
+                    Trusted_person_model t=new Trusted_person_model();
+                    t=postSnapshot.getValue(Trusted_person_model.class);
+                    person.add(new Trusted_person_model(t.getName(), t.getContact(), "---", t.getAddress(),t.getRelation()));
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         trusted_person_adapter myAdapter = new trusted_person_adapter(getApplicationContext(), R.layout.trusted_person_model, person);
         listView.setAdapter(myAdapter);
 
