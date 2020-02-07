@@ -43,25 +43,7 @@ public class foreground_service extends Service {
 
         startForeground(1, notification);
 
-        runnable=new Runnable() {
-            @Override
-            public void run() {
 
-                try {
-                    background_location_update back = new background_location_update();
-
-                    back.update_location(getApplicationContext());
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finally {
-
-                    background_upadte_handler.postDelayed(this,15000);
-                }
-            }
-        };
-        background_upadte_handler.post(runnable);
         return START_NOT_STICKY;
     }
 
@@ -71,7 +53,8 @@ public class foreground_service extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        background_upadte_handler.removeCallbacks(runnable);
+        stopService(new Intent(getApplicationContext(),shake_service.class));
+
     }
 
 

@@ -44,6 +44,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
+import com.example.womensecurityapp.services.foreground_service;
 import com.example.womensecurityapp.services.notification_generator;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -67,6 +68,8 @@ import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.womensecurityapp.MainActivity.tag_service;
 
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
@@ -140,7 +143,11 @@ public class action_screen extends AppCompatActivity implements LocationListener
         alertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getLocation();
+
+                Intent serviceIntent = new Intent(getApplicationContext(), foreground_service.class);
+                serviceIntent.addCategory(tag_service);
+                stopService(serviceIntent);
+
             }
         });
 
@@ -322,18 +329,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
             }
         });
-
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (drawer.isDrawerOpen(GravityCompat.START)){
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
-            super.onBackPressed();
-        }
 
     }
 

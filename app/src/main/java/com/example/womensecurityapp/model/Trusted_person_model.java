@@ -16,6 +16,10 @@ public class Trusted_person_model {
         this.relation = relation;
     }
 
+    public Trusted_person_model() {
+
+    }
+
     public String getName() {
         return name;
     }

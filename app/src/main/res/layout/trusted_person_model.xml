@@ -6,11 +6,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
+        android:layout_margin="3dp">
 
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/ic_phone_black_24dp"
             android:layout_alignParentRight="true"
             android:layout_margin="15dp"
@@ -22,9 +22,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Medhavi"
-        android:layout_margin="5dp"
+        android:layout_margin="3dp"
         android:id="@+id/trusted_person_name"
-        android:textSize="30dp">
+        android:textSize="20dp">
 
     </TextView>
 
@@ -35,8 +35,8 @@
             android:layout_below="@+id/trusted_person_name"
             android:id="@+id/trusted_person_relation"
             android:text="(father)"
-            android:layout_margin="5dp"
-            android:textSize="25dp">
+            android:layout_margin="3dp"
+            android:textSize="15dp">
 
         </TextView>
 
@@ -47,8 +47,8 @@
             android:layout_below="@+id/trusted_person_relation"
             android:id="@+id/trusted_person_contact"
             android:text="87870XXXXXX"
-            android:layout_margin="5dp"
-            android:textSize="25dp">
+            android:layout_margin="3dp"
+            android:textSize="15dp">
 
         </TextView>
 
@@ -59,12 +59,9 @@
             android:layout_below="@+id/trusted_person_contact"
             android:id="@+id/trusted_person_adress"
             android:text="ABV IIITM GWALIOR"
-            android:layout_margin="5dp"
-            android:textSize="20dp">
+            android:layout_margin="3dp"
+            android:textSize="11dp">
 
         </TextView>
-
-
-
     </RelativeLayout>
 </LinearLayout>
