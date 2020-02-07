@@ -2,18 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.womensecurityapp">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
         android:name=".services.AppController"
         android:allowBackup="true"
@@ -23,27 +11,39 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Report.ProblemReport"></activity>
-        <activity android:name=".User_login_info.Trusted_person" />
-        <activity android:name=".User_login_info.Signup" />
-        <activity android:name=".User_login_info.Account_setup" />
 
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4" />
-
-        <activity android:name=".MapActivity" />
-        <activity android:name=".action_screen" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".Main2Activity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Report.ProblemReport" />
+        <activity android:name=".services.notification_generator" />
+
+        <activity android:name=".Report.ProblemReport"></activity>
+        <activity android:name=".User_login_info.Trusted_person" />
+        <activity android:name=".User_login_info.Signup" />
+        <activity android:name=".User_login_info.Account_setup" />
+
+        <activity android:name=".MapActivity" />
+        <activity android:name=".action_screen" />
+
+        <activity android:name=".MainActivity">
+
+        </activity>
+
+        <activity android:name=".services.AudioRecording" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC1uMbDWYK6aaFPdiT9Fp1KsHwMPNJ96d4" />
 
         <service android:name=".services.notification">
             <intent-filter>
@@ -55,5 +55,17 @@
         <service android:name=".services.shake_service" />
         <service android:name=".services.foreground_service" />
     </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>
