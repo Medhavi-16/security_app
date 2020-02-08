@@ -35,7 +35,6 @@ import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
-import com.example.womensecurityapp.model.problem_generator;
 import com.example.womensecurityapp.services.SMS;
 import com.example.womensecurityapp.services.foreground_service;
 import com.google.firebase.auth.FirebaseAuth;
