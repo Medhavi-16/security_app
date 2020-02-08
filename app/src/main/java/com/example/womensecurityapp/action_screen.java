@@ -32,9 +32,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
@@ -74,8 +72,6 @@ import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Locale;
-
-import static com.example.womensecurityapp.MainActivity.tag_service;
 
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
@@ -300,7 +296,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                                 markerOptions[0].position(latLng);
 
-                                markerOptions[0].title("NAME: "+person.getInfo().getName()+"\nContact: "+person.getInfo().getContact());
+                                markerOptions[0].title("NAME: "+person.getInfo().getName());
 
 
                                 marker[0] =mMap.addMarker(markerOptions[0]
@@ -400,9 +396,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     public void onLocationChanged(Location location) {
 
         myLocation = location;
-
         locationText.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
-  //      messaging();
 
         moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM, "My Location");
 
