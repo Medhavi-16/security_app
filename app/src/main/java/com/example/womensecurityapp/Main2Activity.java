@@ -308,19 +308,42 @@ public class Main2Activity extends AppCompatActivity {
 
                 editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record_data")
+                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                         .child(editText.getText().toString());
 
-                databaseReference.addValueEventListener(new ValueEventListener() {
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        if (!(dataSnapshot.getValue()==null))
+                        if (dataSnapshot.exists() )
                         {
-                            Toast.makeText(getApplicationContext(),"Starting the live Tracking",Toast.LENGTH_LONG).show();
+                            DatabaseReference check=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                                    .child(editText.getText().toString()).child("status");
 
-                            new_user_info();
-                            dialog.dismiss();
+                            check.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
+
+
+                                    if (pdataSnapshot.getValue().toString().equals("active")) {
+                                        Toast.makeText(getApplicationContext(), "Starting the live Tracking", Toast.LENGTH_LONG).show();
+                                        editor.putString("problem-id", editText.getText().toString());
+                                        editor.commit();
+
+                                        new_user_info();
+                                        dialog.dismiss();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getApplicationContext(),"Problem is closed",Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                         else
                         {
@@ -362,9 +385,9 @@ public class Main2Activity extends AppCompatActivity {
 
         final int[] a = new int[1];
 
-        final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("counter");
+        final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person").child("counter");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -382,17 +405,22 @@ public class Main2Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                person_details details=new person_details(new location_model("0","0"),new person_info(name.getText().toString(),contact.getText().toString()),"1");
+                person_details details=new person_details(new location_model("0","0")
+                        ,new person_info(preferences.getString("current_user_name","NA")
+                        ,preferences.getString("current_user_contact","NA")),"1");
 
-                DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                        .child("1").child("person").child("person_info").child("person_no_"+ String.valueOf(a[0]));
+                DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference()
+                        .child("Problem_Record")
+                        .child(preferences.getString("problem-id","1"))
+                        .child("person")
+                        .child("person_info")
+                        .child("person_no_"+ a[0]);
 
                 databaseReference1.setValue(details);
 
 
-                editor.putString("new_user_problem_id","1");
-                editor.putString("new_user_name",name.getText().toString());
-                editor.putString("new_user_contact",contact.getText().toString());
+                editor.putString("new_user_name",preferences.getString("current_user_name","NA"));
+                editor.putString("new_user_contact",preferences.getString("current_user_contact","NA"));
                 editor.putString("new_user_counter", String.valueOf(a[0]));
                 editor.putString("active","yes");
                 editor.commit();

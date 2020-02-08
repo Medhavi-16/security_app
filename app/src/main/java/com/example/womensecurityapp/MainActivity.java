@@ -72,22 +72,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-        {
-            NotificationChannel channel1=new NotificationChannel("mynotification","mynotification", NotificationManager.IMPORTANCE_DEFAULT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel1 = new NotificationChannel("mynotification", "mynotification", NotificationManager.IMPORTANCE_DEFAULT);
 
-            NotificationManager manager=getSystemService(NotificationManager.class);
+            NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel1);
         }
 
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-        {
-            NotificationChannel channel2=new NotificationChannel("Gwalior","Gwalior", NotificationManager.IMPORTANCE_DEFAULT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel2 = new NotificationChannel("Gwalior", "Gwalior", NotificationManager.IMPORTANCE_DEFAULT);
 
-            NotificationManager manager=getSystemService(NotificationManager.class);
+            NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel2);
         }
-
 
 
         FirebaseMessaging.getInstance().subscribeToTopic("hello")
@@ -105,16 +102,16 @@ public class MainActivity extends AppCompatActivity {
         requestStoragePermission();
 
 
-        final Button start_service=findViewById(R.id.main_start_service);
-        Button stop_service=findViewById(R.id.main_stop_service);
+        final Button start_service = findViewById(R.id.main_start_service);
+        Button stop_service = findViewById(R.id.main_stop_service);
 
-        new_registration=findViewById(R.id.new_user);
+        new_registration = findViewById(R.id.new_user);
 
         new_registration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent i=new Intent(getApplicationContext(), Signup.class);
+                Intent i = new Intent(getApplicationContext(), Signup.class);
                 startActivity(i);
             }
         });
@@ -128,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
 
                 ContextCompat.startForegroundService(MainActivity.this, serviceIntent);
+
             }
         });
         stop_service.setOnClickListener(new View.OnClickListener() {
@@ -142,16 +140,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         // shared preference for info
         // it contains the basic info about the user
-        recent_activity=findViewById(R.id.main_recent_activity);
+        recent_activity = findViewById(R.id.main_recent_activity);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = preferences.edit();
 
 
         actionScreenBtn = findViewById(R.id.main_actionScreenBtn);
-        new_entry=findViewById(R.id.main_new_entry);
+        new_entry = findViewById(R.id.main_new_entry);
         new_entry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,15 +168,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (!preferences.getString("active", "no").equals("no"))
-                {
-                    Toast.makeText(getApplicationContext(),preferences.getString("active", "no"),Toast.LENGTH_LONG).show();
-                    Intent i=new Intent(getApplicationContext(),MapActivity.class);
+                if (!preferences.getString("active", "no").equals("no")) {
+                    Toast.makeText(getApplicationContext(), preferences.getString("active", "no"), Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(getApplicationContext(), MapActivity.class);
                     startActivity(i);
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"You don't have recent activity",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "You don't have recent activity", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -190,10 +184,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (checkPermissionFromDevice()){
+                if (checkPermissionFromDevice()) {
                     startRecording();
-                }
-                else {
+                } else {
                     requestAudioPermission();
                 }
             }
@@ -241,12 +234,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = new Intent(MainActivity.this, Main2Activity.class);
-        startActivity(intent);
-        finish();
-
+        if (preferences.getString("girl-login", "no").equals("yes")) {
+            Intent i = new Intent(getApplicationContext(), action_screen.class);
+            startActivity(i);
+            finish();
+        } else {
+            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+            startActivity(intent);
+            finish();
+        }
     }
-
     public void new_entry_track() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
