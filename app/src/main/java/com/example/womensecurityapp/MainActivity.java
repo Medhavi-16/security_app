@@ -51,16 +51,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     public static final String tag_service = "MyServiceTag";
 
-    private static final int STORAGE_REQUEST_CODE = 200;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
     private String[] storagePermissions;
 
-    private Button actionScreenBtn,new_entry,recent_activity;
+    private Button actionScreenBtn, new_entry, recent_activity;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
 
-    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn,new_registration;
+    private Button startRecordingBtn, stopRecordingBtn, playRecordingBtn, stopPlayingBtn, new_registration;
     private Button reportButton;
     private Button shareLocationButton;
     String pathSave = "";
@@ -98,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        requestStoragePermission();
+        final Button start_service = findViewById(R.id.main_start_service);
+        Button stop_service = findViewById(R.id.main_stop_service);
 
-
+      
         final Button start_service = findViewById(R.id.main_start_service);
         Button stop_service = findViewById(R.id.main_stop_service);
 
@@ -255,9 +254,9 @@ public class MainActivity extends AppCompatActivity {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-         final EditText editText=dialog.findViewById(R.id.new_entry_text);
-        Button cancel=dialog.findViewById(R.id.new_entry_cancel);
-        Button ok=dialog.findViewById(R.id.new_entry_ok);
+        final EditText editText = dialog.findViewById(R.id.new_entry_text);
+        Button cancel = dialog.findViewById(R.id.new_entry_cancel);
+        Button ok = dialog.findViewById(R.id.new_entry_ok);
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,26 +270,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                 editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
+                editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record_data")
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Problem_Record_data")
                         .child(editText.getText().toString());
 
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        if (!(dataSnapshot.getValue()==null))
-                        {
-                            Toast.makeText(getApplicationContext(),"Starting the live Tracking",Toast.LENGTH_LONG).show();
+                        if (!(dataSnapshot.getValue() == null)) {
+                            Toast.makeText(getApplicationContext(), "Starting the live Tracking", Toast.LENGTH_LONG).show();
 
                             new_user_info();
                             dialog.dismiss();
-                        }
-                        else
-                        {
+                        } else {
 
-                            Toast.makeText(getApplicationContext(),"Wrong ID, Please Check it",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Wrong ID, Please Check it", Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -307,8 +303,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.getWindow().setAttributes(lp);
     }
 
-    public void new_user_info()
-    {
+    public void new_user_info() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
         dialog.setContentView(R.layout.new_user_track_info_popup);
@@ -319,21 +314,21 @@ public class MainActivity extends AppCompatActivity {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-      final   EditText name=dialog.findViewById(R.id.new_entry_name);
-       final EditText contact=dialog.findViewById(R.id.new_entry_contact);
+        final EditText name = dialog.findViewById(R.id.new_entry_name);
+        final EditText contact = dialog.findViewById(R.id.new_entry_contact);
 
-        Button cancel=dialog.findViewById(R.id.new_entry_cancel2);
-        Button ok=dialog.findViewById(R.id.new_entry_ok2);
+        Button cancel = dialog.findViewById(R.id.new_entry_cancel2);
+        Button ok = dialog.findViewById(R.id.new_entry_ok2);
 
         final int[] a = new int[1];
 
-       final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("counter");
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("counter");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                a[0] =dataSnapshot.getValue().hashCode();
+                a[0] = dataSnapshot.getValue().hashCode();
 
             }
 
@@ -347,28 +342,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                person_details details=new person_details(new location_model("0","0"),new person_info(name.getText().toString(),contact.getText().toString()),"1");
+                person_details details = new person_details(new location_model("0", "0"), new person_info(name.getText().toString(), contact.getText().toString()), "1");
 
-                DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                        .child("1").child("person").child("person_info").child("person_no_"+ String.valueOf(a[0]));
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                        .child("1").child("person").child("person_info").child("person_no_" + String.valueOf(a[0]));
 
                 databaseReference1.setValue(details);
 
 
-                editor.putString("new_user_problem_id","1");
-                editor.putString("new_user_name",name.getText().toString());
-                editor.putString("new_user_contact",contact.getText().toString());
+                editor.putString("new_user_problem_id", "1");
+                editor.putString("new_user_name", name.getText().toString());
+                editor.putString("new_user_contact", contact.getText().toString());
                 editor.putString("new_user_counter", String.valueOf(a[0]));
-                editor.putString("active","yes");
+                editor.putString("active", "yes");
                 editor.commit();
 
                 a[0]++;
 
                 databaseReference.setValue(a[0]);
 
-                Intent i=new Intent(getApplicationContext(),MapActivity.class);
+                Intent i = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(i);
-
 
 
                 dialog.dismiss();
@@ -382,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void requestAudioPermission(){
+    private void requestAudioPermission() {
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CODE);
@@ -392,14 +386,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        switch (requestCode){
+        switch (requestCode) {
 
-            case REQUEST_PERMISSION_CODE:{
+            case REQUEST_PERMISSION_CODE: {
 
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -408,7 +401,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean checkPermissionFromDevice(){
+    private boolean checkPermissionFromDevice() {
 
         int write_external_storage_result = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int record_audio_result = ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
@@ -418,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void startRecording(){
+    public void startRecording() {
 
         pathSave = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
                 UUID.randomUUID().toString() + "_audio.3gp";
@@ -436,19 +429,18 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Recording...", Toast.LENGTH_SHORT).show();
     }
 
-    public void stopRecording(){
+    public void stopRecording() {
         mediaRecorder.stop();
     }
 
-    public void playRecording(){
+    public void playRecording() {
 
         mediaPlayer = new MediaPlayer();
         try {
 
             mediaPlayer.setDataSource(pathSave);
             mediaPlayer.prepare();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "onCreate: " + e.getMessage());
         }
 
@@ -456,10 +448,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Playing...", Toast.LENGTH_SHORT).show();
     }
 
-    public void stopPlaying(){
+    public void stopPlaying() {
 
-        if (mediaPlayer != null)
-        {
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
             setupMediaRecorder();
@@ -477,13 +468,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void requestStoragePermission(){
-        requestPermissions(storagePermissions, STORAGE_REQUEST_CODE);
-    }
+    private void messaging() {
 
-      private void messaging(){
-
-        if (checkSMSpermission() && checkPhoneStatePermission()){
+        if (checkSMSpermission() && checkPhoneStatePermission()) {
 
             String destPhone = "6265105303";
             String message = "Hello";
@@ -491,20 +478,19 @@ public class MainActivity extends AppCompatActivity {
             SMS smsObject = new SMS();
             smsObject.sendSMS(destPhone, message);
 
-        }
-        else {
+        } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
         }
     }
 
-    public boolean checkSMSpermission(){
+    public boolean checkSMSpermission() {
 
         int check = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         return (check == PackageManager.PERMISSION_GRANTED);
 
     }
 
-    public boolean checkPhoneStatePermission(){
+    public boolean checkPhoneStatePermission() {
 
         int check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         return (check == PackageManager.PERMISSION_GRANTED);
