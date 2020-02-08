@@ -31,7 +31,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -51,6 +50,7 @@ public class BackgroundLocationService_Girls extends Service {
     DatabaseReference databaseReference_location;
     DatabaseReference databaseReference_report;
 
+    List<Address> address;
     Location currentLocation;
     int oldMinute, oldHour;
 
@@ -127,24 +127,29 @@ public class BackgroundLocationService_Girls extends Service {
 
                             Log.d(TAG, "getLocationG: " + currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
 
+                            try{
+                                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                                address = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
 
                             if (!preferences.getString("is_notification_send", "not_known").equals("yes")) {
-                                Log.e("value", preferences.getString("is_notification_send", "not_known"));
-                                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                                Log.d(TAG, "preferences: notification");
                                 try {
-                                    List<Address> address = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                                    Log.d(TAG, "preferences: called");
                                     notification_generator n = new notification_generator();
                                     n.send_notification("main", address.get(0).getLocality(), getApplicationContext());
 
-                                    report(address);
-
-                                } catch (IOException e) {
+                                } catch (Exception e) {
                                     Log.d(TAG, "getLocation: catch Block");
                                 }
 
                                 editor.putString("is_notification_send", "yes");
                                 editor.commit();
                             }
+
+                            report();
 
 
                             // updating location in firebase
@@ -164,7 +169,7 @@ public class BackgroundLocationService_Girls extends Service {
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
     }
 
-    private void report(List<Address> address) {
+    private void report() {
 
         Log.d("Background Report","report: called");
 
