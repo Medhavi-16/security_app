@@ -99,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
         final Button start_service = findViewById(R.id.main_start_service);
         Button stop_service = findViewById(R.id.main_stop_service);
 
-      
-        final Button start_service = findViewById(R.id.main_start_service);
-        Button stop_service = findViewById(R.id.main_stop_service);
 
         new_registration = findViewById(R.id.new_user);
 
