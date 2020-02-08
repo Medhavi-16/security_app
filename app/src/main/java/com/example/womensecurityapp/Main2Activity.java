@@ -24,7 +24,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
@@ -335,6 +334,7 @@ public class Main2Activity extends AppCompatActivity {
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setAttributes(lp);
     }
+
     public void new_user_info()
     {
         final Dialog dialog = new Dialog(Main2Activity.this);

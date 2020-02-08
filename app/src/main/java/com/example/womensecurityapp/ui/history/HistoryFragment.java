@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.womensecurityapp.R;
 import com.example.womensecurityapp.Report.AdapterReport;
 import com.example.womensecurityapp.Report.ModelReport;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,7 +52,24 @@ public class HistoryFragment extends Fragment {
         });
 
         spinner = root.findViewById(R.id.history_spinner);
-        dbRefProblem = FirebaseDatabase.getInstance().getReference().child("Users");
+        dbRefProblem = FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("ProblemID");
+        dbRefProblem.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         recyclerView = root.findViewById(R.id.history_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
