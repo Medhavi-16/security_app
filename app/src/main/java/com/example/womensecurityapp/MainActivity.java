@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     public static final String tag_service = "MyServiceTag";
 
-    public static final int RC_PIC_CODE = 101;
     private static final int STORAGE_REQUEST_CODE = 200;
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
