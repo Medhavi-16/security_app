@@ -300,7 +300,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                                 markerOptions[0].position(latLng);
 
-                                markerOptions[0].title("NAME: "+person.getInfo().getName()+"\nContact: "+person.getInfo().getContact());
+                                markerOptions[0].title("NAME: "+person.getInfo().getName());
 
 
                                 marker[0] =mMap.addMarker(markerOptions[0]

@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     app:strokeWidth="3dp"
-    app:strokeColor="@color/colorPrimary">
+    app:strokeColor="@color/pink">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:background="@color/pink">
 
         <TextView
             android:layout_width="wrap_content"
