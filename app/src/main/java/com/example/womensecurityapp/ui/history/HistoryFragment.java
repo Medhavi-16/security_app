@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,8 @@ public class HistoryFragment extends Fragment {
     private AdapterReport adapterReport;
     List<ModelReport> modelReportList;
     DatabaseReference databaseReferenceReport;
+    DatabaseReference dbRefProblem;
+    Spinner spinner;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -46,6 +49,9 @@ public class HistoryFragment extends Fragment {
 
             }
         });
+
+        spinner = root.findViewById(R.id.history_spinner);
+        dbRefProblem = FirebaseDatabase.getInstance().getReference().child("Users");
 
         recyclerView = root.findViewById(R.id.history_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
