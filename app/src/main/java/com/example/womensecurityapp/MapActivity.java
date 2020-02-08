@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -91,8 +92,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("Location");
         databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person")
                 .child("person_info").child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
-
-
     }
 
     private void init(){
@@ -342,19 +341,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         final TextView contact=dialog.findViewById(R.id.person_girl_contact);
         Button cancel =dialog.findViewById(R.id.person_girl_cancel);
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Person_info").child(preferences.getString("problem-id","1")).child("User_info").child("personal_info");
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference databaseReference1= FirebaseDatabase.getInstance().getReference().child("problem-id").child(preferences.getString("problem-id","1"));
+        databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                User_residential_details person=new User_residential_details();
-                person=dataSnapshot.getValue(User_residential_details.class);
+                DatabaseReference databaseReference11=FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.getValue().toString()).child("Personal_info");
+                databaseReference11.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
+                        User_residential_details person=new User_residential_details();
+                        person=pdataSnapshot.getValue(User_residential_details.class);
 
-                name.setText(person.getName());
-                address.setText(person.getHouse_no()+" "+person.getStreet()+" "+person.getCity()+" "+person.getCountry());
-                contact.setText(person.getContact_no());
+                        name.setText(person.getName());
+                        address.setText(person.getHouse_no()+" "+person.getStreet()+" "+person.getCity()+" "+person.getCountry());
+                        contact.setText(person.getContact_no());
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override

@@ -100,6 +100,10 @@ public class MainActivity extends AppCompatActivity {
         final Button start_service = findViewById(R.id.main_start_service);
         Button stop_service = findViewById(R.id.main_stop_service);
 
+      
+        final Button start_service = findViewById(R.id.main_start_service);
+        Button stop_service = findViewById(R.id.main_stop_service);
+
         new_registration = findViewById(R.id.new_user);
 
         new_registration.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
 
                 ContextCompat.startForegroundService(MainActivity.this, serviceIntent);
+
             }
         });
         stop_service.setOnClickListener(new View.OnClickListener() {
@@ -228,12 +233,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = new Intent(MainActivity.this, Main2Activity.class);
-        startActivity(intent);
-        finish();
-
+        if (preferences.getString("girl-login", "no").equals("yes")) {
+            Intent i = new Intent(getApplicationContext(), action_screen.class);
+            startActivity(i);
+            finish();
+        } else {
+            Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+            startActivity(intent);
+            finish();
+        }
     }
-
     public void new_entry_track() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
