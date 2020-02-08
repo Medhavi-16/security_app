@@ -9,9 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.womensecurityapp.R;
+import com.example.womensecurityapp.ui.profile.ProfileModel;
 
 public class TrustedFragment extends Fragment {
 
@@ -19,7 +21,7 @@ public class TrustedFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        trustedViewModel = ViewModelProviders.of(this).get(TrustedViewModel.class);
+        trustedViewModel = new ViewModelProvider(this).get(TrustedViewModel.class);
         View root = inflater.inflate(R.layout.fragment_trusted, container, false);
         trustedViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override

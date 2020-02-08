@@ -278,8 +278,6 @@ public class Main2Activity extends AppCompatActivity {
         dialog.getWindow().setAttributes(lp);
     }
 
-}
-
     public void new_entry_track() {
         final Dialog dialog = new Dialog(Main2Activity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
