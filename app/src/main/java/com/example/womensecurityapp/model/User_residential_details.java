@@ -69,4 +69,12 @@ package com.example.womensecurityapp.model;
         public void setHouse_no(String house_no) {
             this.house_no = house_no;
         }
-}
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+    }

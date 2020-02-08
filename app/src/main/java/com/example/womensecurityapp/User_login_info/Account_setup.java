@@ -41,17 +41,19 @@ public class Account_setup extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User_residential_details profile=new User_residential_details();
+                String mail=FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                User_residential_details profile=new User_residential_details(name.getEditText().getText().toString(),mail,contact.getEditText().getText().toString(),"India",city.getEditText().getText().toString(),street.getEditText().getText().toString(),house.getEditText().getText().toString());
 
                 Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_LONG).show();
 
-                profile.setName(name.getEditText().getText().toString());
+
+               /* profile.setName(name.getEditText().getText().toString());
                 profile.setContact_no(contact.getEditText().getText().toString());
                 profile.setHouse_no(house.getEditText().getText().toString());
                 profile.setStreet(street.getEditText().getText().toString());
                 profile.setCity(city.getEditText().getText().toString());
                 profile.setCountry("India");
-
+*/
 
                 final DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 databaseReference.child("Personal_info").setValue(profile);
