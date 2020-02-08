@@ -16,16 +16,10 @@
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".Report.ProblemReport" />
         <activity android:name=".services.notification_generator" />
 
-        <activity android:name=".Report.ProblemReport"></activity>
         <activity android:name=".User_login_info.Trusted_person" />
         <activity android:name=".User_login_info.Signup" />
         <activity android:name=".User_login_info.Account_setup" />
@@ -34,10 +28,13 @@
         <activity android:name=".action_screen" />
 
         <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
-        <activity android:name=".services.AudioRecording" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -55,6 +52,7 @@
         <service android:name=".services.shake_service" />
         <service android:name=".services.foreground_service" />
     </application>
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />

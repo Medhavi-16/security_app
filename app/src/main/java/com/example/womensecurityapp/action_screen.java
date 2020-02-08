@@ -32,16 +32,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.womensecurityapp.model.location_model;
+import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.services.AppController;
 import com.example.womensecurityapp.services.BackgroundLocationService_Girls;
 import com.example.womensecurityapp.services.foreground_service;
@@ -74,6 +75,8 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.womensecurityapp.MainActivity.tag_service;
+
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
@@ -86,7 +89,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
     public static final String NAME = "name";
     public static final String VICINITY = "vicinity";
     private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
-    private static final int SEND_SMS_PERMISSION_REQUEST = 0;
     private static final float DEFAULT_ZOOM = 15f;
     private static final int IMAGE_PICK_CAMERA_CODE = 300;
 
@@ -94,7 +96,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private String storagePath = "users_problem_photo_imgs/ ";
 
     //widgets
-    private DrawerLayout drawer;
+
     private Button alertButton;
     private LinearLayout mapButton;
     private TextView locationText;
@@ -214,12 +216,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
         databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                 .child("1").child("person").child("person_info");
 
-/*        //Drawer
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open_nav_drawer,
-                R.string.close_nav_drawer);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();*/
 
         // init widgets
         alertButton = findViewById(R.id.alertButton);
@@ -285,14 +281,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
                     final MarkerOptions[] markerOptions = {null};
                     final Marker[] marker = new Marker[1];
 
-                    databaseReference_person_info=databaseReference_person.child(postSnapshot.getKey()).child("location");
+                    databaseReference_person_info=databaseReference_person.child(postSnapshot.getKey());
 
                     databaseReference_person_info.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
 
-                            location_model location = new location_model();
-                            location=pdataSnapshot.getValue(location_model.class);
+                            person_details person=new person_details();
+                            person=pdataSnapshot.getValue(person_details.class);
 
 
                             if(markerOptions[0] ==null)
@@ -300,20 +296,20 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                                 markerOptions[0] = new MarkerOptions();
 
-                                LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
+                                LatLng latLng = new LatLng(Double.valueOf(person.getLocation().getLatitude()), Double.valueOf(person.getLocation().getLongitude()));
 
                                 markerOptions[0].position(latLng);
 
-                                markerOptions[0].title(latLng.latitude + " : " + latLng.longitude);
+                                markerOptions[0].title("NAME: "+person.getInfo().getName()+"\nContact: "+person.getInfo().getContact());
+
 
                                 marker[0] =mMap.addMarker(markerOptions[0]
                                         .icon(bitmapDescriptorFromVector(getApplicationContext(),
                                                 R.drawable.ic_person_pin_circle)));
-
                             }
                             else
                             {
-                                LatLng latLng = new LatLng(Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()));
+                                LatLng latLng = new LatLng(Double.valueOf(person.getLocation().getLatitude()), Double.valueOf(person.getLocation().getLongitude()));
                                 marker[0].setPosition(latLng);
                             }
                         }
@@ -336,14 +332,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     @Override
     public void onBackPressed() {
-
-        if (drawer.isDrawerOpen(GravityCompat.START)){
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
-            super.onBackPressed();
-        }
-
+        super.onBackPressed();
     }
 
     @Override
@@ -455,37 +444,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
     @Override
     public void onProviderDisabled(String s) {
         Toast.makeText(this, "Please enable GPS and Internet", Toast.LENGTH_SHORT).show();
-    }
-
-  /*  private void messaging(){
-
-        if (checkSMSpermission() && checkPhoneStatePermission()){
-
-            String destPhone = "9024923695";
-            String message = locationText.getText().toString();
-
-            SMS smsObject = new SMS();
-            smsObject.sendSMS(destPhone, message);
-
-        }
-        else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
-        }
-    }
-*/
-
-    public boolean checkSMSpermission(){
-
-        int check = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
-        return (check == PackageManager.PERMISSION_GRANTED);
-
-    }
-
-    public boolean checkPhoneStatePermission(){
-
-        int check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-        return (check == PackageManager.PERMISSION_GRANTED);
-
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title){
@@ -777,39 +735,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
                         Log.d(TAG, "uploadProfileCoverPhoto: Successful");
                         Toast.makeText(action_screen.this, "Image uploaded", Toast.LENGTH_SHORT).show();
-                        /*// image is uploaded to storage now gets its url and store it in user database
-                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!uriTask.isSuccessful());
 
-                        Uri downloadUri = uriTask.getResult();
-
-                        if (uriTask.isSuccessful()){
-
-                            //image uploaded  add or update url in database
-
-                            *//*HashMap<String, Object> results = new HashMap<>();
-                            results.put(profileOrCover, downloadUri.toString());
-
-                            databaseReference.child(user.getUid()).updateChildren(results)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-
-                                            Toast.makeText(action_screen.this, "Image Updated...", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            Toast.makeText(action_screen.this, "Error: updating image...", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });*//*
-
-                        }
-                        else {
-                            Toast.makeText(action_screen.this, "Something error occurred", Toast.LENGTH_SHORT).show();
-                        }*/
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -822,12 +748,21 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 });
 
     }
+    public void person_info_dilog(Double aDouble)
+    {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.person_info_popup);
+        dialog.setCancelable(true);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        TextView name=dialog.findViewById(R.id.person_info_name);
+        TextView contact=dialog.findViewById(R.id.person_info_contact);
+
+    }
 
 }
-
-
-
-
-
-
-

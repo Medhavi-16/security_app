@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_PERMISSION_CODE = 1000;
     public static final String TAG = "MainActivity";
+    public static final String tag_service = "MyServiceTag";
 
     public static final int RC_PIC_CODE = 101;
     private static final int STORAGE_REQUEST_CODE = 200;
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent serviceIntent = new Intent(MainActivity.this, foreground_service.class);
+                serviceIntent.addCategory(tag_service);
                 serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
 
                 ContextCompat.startForegroundService(MainActivity.this, serviceIntent);
@@ -134,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent serviceIntent = new Intent(MainActivity.this, foreground_service.class);
+                serviceIntent.addCategory(tag_service);
                 stopService(serviceIntent);
+
             }
         });
 
@@ -237,6 +241,10 @@ public class MainActivity extends AppCompatActivity {
                 messaging();
             }
         });
+
+        Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+        startActivity(intent);
+        finish();
 
     }
 
