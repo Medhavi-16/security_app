@@ -24,6 +24,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.womensecurityapp.User_login_info.Account_setup;
 import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
@@ -51,6 +52,7 @@ public class Main2Activity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseAuth.AuthStateListener authStateListener;
     public static User_residential_details t=new User_residential_details();
+    public static String status="true";
 
 
     @Override
@@ -65,14 +67,8 @@ public class Main2Activity extends AppCompatActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_profile, R.id.nav_history,
                 R.id.nav_trusted, R.id.nav_contact, R.id.nav_share)
@@ -156,7 +152,16 @@ public class Main2Activity extends AppCompatActivity {
                     databaseReference.child("Personal_info").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists())
                             t=dataSnapshot.getValue(User_residential_details.class);
+                            else
+                            {
+                                status="false";
+                                Intent i=new Intent(Main2Activity.this, Account_setup.class);
+                                startActivity(i);
+                                Toast.makeText(getApplicationContext(),"Not set",Toast.LENGTH_SHORT).show();
+                            }
+
 
                         }
 
@@ -224,7 +229,8 @@ public class Main2Activity extends AppCompatActivity {
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.MATCH_PARENT ;
-        dialog.setCancelable(true);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         Button login=dialog.findViewById(R.id.login);
         final Button Signup=dialog.findViewById(R.id.signup);
         final Button goto_=dialog.findViewById(R.id.goto_id);
@@ -271,6 +277,8 @@ public class Main2Activity extends AppCompatActivity {
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setAttributes(lp);
     }
+
+}
 
     public void new_entry_track() {
         final Dialog dialog = new Dialog(Main2Activity.this);
