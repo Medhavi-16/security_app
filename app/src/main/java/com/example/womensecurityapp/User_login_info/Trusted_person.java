@@ -64,8 +64,9 @@ public class Trusted_person extends AppCompatActivity {
                 else
                 {
                     Trusted_person_model trusted_person_model=new Trusted_person_model(name.getEditText().getText().toString(),contact.getEditText().getText().toString(),mail.getEditText().getText().toString(),address.getEditText().getText().toString(),relation.getEditText().getText().toString());
-                    d.child("Info").child(Integer.toString(++c)).setValue(trusted_person_model);
-                    d.child("count").setValue(Integer.toString(c));
+                    d.child("Info").child(Integer.toString((c+1))).setValue(trusted_person_model);
+                    d.child("count").setValue(Integer.toString((c+1)));
+                    Toast.makeText(getApplicationContext(),String.valueOf(c+1),Toast.LENGTH_SHORT).show();
                     showDialog();
 
                 }
