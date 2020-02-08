@@ -29,7 +29,6 @@ import java.util.List;
 public class HistoryFragment extends Fragment {
 
     private static final String TAG = "HistoryFragment";
-    private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
 
     private HistoryViewModel historyViewModel;
     private RecyclerView recyclerView;
