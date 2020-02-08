@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
-    private String[] storagePermissions;
 
     private Button actionScreenBtn, new_entry, recent_activity;
     public static SharedPreferences preferences;

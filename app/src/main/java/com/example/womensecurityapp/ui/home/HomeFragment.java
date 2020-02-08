@@ -473,21 +473,7 @@ public class HomeFragment extends Fragment {
         dialog.getWindow().setAttributes(lp);
     }
 
-    private void startShakeService(){
-        Intent serviceIntent = new Intent(getActivity(), foreground_service.class);
-        serviceIntent.addCategory(tag_service);
-        serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
-
-        ContextCompat.startForegroundService(getActivity(), serviceIntent);
-    }
-
-    private void stopShakeService(){
-        Intent serviceIntent = new Intent(getActivity(), foreground_service.class);
-        serviceIntent.addCategory(tag_service);
-        getActivity().stopService(serviceIntent);
-    }
-
-    private void requestAudioPermission(){
+    private void requestAudioPermission() {
 
         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CODE);
@@ -497,14 +483,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        switch (requestCode){
+        switch (requestCode) {
 
-            case REQUEST_PERMISSION_CODE:{
+            case REQUEST_PERMISSION_CODE: {
 
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -513,7 +498,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private boolean checkPermissionFromDevice(){
+    private boolean checkPermissionFromDevice() {
 
         int write_external_storage_result = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int record_audio_result = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO);
@@ -523,7 +508,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public void startRecording(){
+    public void startRecording() {
 
         pathSave = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
                 UUID.randomUUID().toString() + "_audio.3gp";
@@ -541,8 +526,7 @@ public class HomeFragment extends Fragment {
         Toast.makeText(getActivity(), "Recording...", Toast.LENGTH_SHORT).show();
     }
 
-    public void stopRecording(){
-        Log.d(TAG, "stopRecording: Recording Stopped");
+    public void stopRecording() {
         mediaRecorder.stop();
     }
 
@@ -554,6 +538,20 @@ public class HomeFragment extends Fragment {
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(pathSave);
 
+    }
+
+    private void startShakeService(){
+        Intent serviceIntent = new Intent(getActivity(), foreground_service.class);
+        serviceIntent.addCategory(tag_service);
+        serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
+
+        ContextCompat.startForegroundService(getActivity(), serviceIntent);
+    }
+
+    private void stopShakeService(){
+        Intent serviceIntent = new Intent(getActivity(), foreground_service.class);
+        serviceIntent.addCategory(tag_service);
+        getActivity().stopService(serviceIntent);
     }
 
 }
