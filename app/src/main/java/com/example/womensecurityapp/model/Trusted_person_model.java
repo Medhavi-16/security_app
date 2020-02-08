@@ -8,7 +8,8 @@ public class Trusted_person_model {
     String address;
     String relation;
 
-    public Trusted_person_model(){
+
+    public Trusted_person_model() {
 
     }
 

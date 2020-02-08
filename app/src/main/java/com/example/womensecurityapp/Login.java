@@ -1,4 +1,4 @@
-package com.example.womensecurityapp.User_login_info;
+package com.example.womensecurityapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.womensecurityapp.R;
+import com.example.womensecurityapp.User_login_info.Account_setup;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,10 +26,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.maps.errors.ApiException;
 
-public class Signup extends AppCompatActivity {
-
+public class Login extends AppCompatActivity {
     FirebaseAuth auth;
-    Button signup;
+    Button login;
     TextInputLayout id, password;
     private FirebaseAuth mAuth;
     GoogleSignInClient mGoogleSignInClient;
@@ -37,20 +36,9 @@ public class Signup extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
-
-//        Button next=findViewById(R.id.next_page);
-
-        /*next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(),Account_setup.class);
-                startActivity(i);
-            }
-        });*/
-
+        setContentView(R.layout.activity_login);
         auth = FirebaseAuth.getInstance();
-        signup = findViewById(R.id.signup);
+        login = findViewById(R.id.log_in);
         id = findViewById(R.id.user_id);
         password = findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();
@@ -71,16 +59,17 @@ public class Signup extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
-        signup.setOnClickListener(new View.OnClickListener() {
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                auth.createUserWithEmailAndPassword(id.getEditText().getText().toString(), password.getEditText().getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+                auth.signInWithEmailAndPassword(id.getEditText().getText().toString(), password.getEditText().getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
                             Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
-                            Intent i=new Intent(getApplicationContext(),Account_setup.class);
+                            Intent i=new Intent(Login.this, Main2Activity.class);
                             startActivity(i);
 
                         } else {
@@ -128,7 +117,7 @@ public class Signup extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),FirebaseAuth.getInstance().getCurrentUser().getEmail().toString(),Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
-                            Intent i=new Intent(getApplicationContext(),Account_setup.class);
+                            Intent i=new Intent(Login.this,Main2Activity.class);
                             startActivity(i);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -137,4 +126,5 @@ public class Signup extends AppCompatActivity {
                     }
                 });
     }
-}
+    }
+
