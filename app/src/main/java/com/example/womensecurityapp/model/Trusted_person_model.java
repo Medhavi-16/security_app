@@ -9,7 +9,9 @@ public class Trusted_person_model {
     String relation;
 
 
+    public Trusted_person_model() {
 
+    }
 
     public Trusted_person_model(String name, String contact, String email, String address, String relation) {
         this.name = name;
