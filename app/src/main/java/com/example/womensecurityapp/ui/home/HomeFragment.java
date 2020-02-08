@@ -33,6 +33,7 @@ import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
+import com.example.womensecurityapp.model.problem_generator;
 import com.example.womensecurityapp.services.SMS;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -55,7 +56,7 @@ public class HomeFragment extends Fragment {
     public static SharedPreferences.Editor editor;*/
 
     private HomeViewModel homeViewModel;
-    private Button shareLocation,help,share,start,recent;
+    private Button shareLocation,help,start,recent;
 
     private ToggleButton toggleButton;
 
@@ -74,24 +75,42 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        final DatabaseReference databaseReference_coubter = FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
+        databaseReference_coubter.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                String a=dataSnapshot.getValue().toString();
+
+                editor.putString("problem-id",a);
+                editor.commit();
+                Log.e("counter1",preferences.getString("problem-id","1478"));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         try {
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users")
-                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                    .child("Personal_info");
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Personal_info");
 
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+                    {
+                        User_residential_details u = new User_residential_details();
+                        u = dataSnapshot.getValue(User_residential_details.class);
 
-                    User_residential_details u = new User_residential_details();
-                    u = dataSnapshot.getValue(User_residential_details.class);
-
-                    name.setText(u.getName());
-                    contact.setText(u.getContact_no());
-                    editor.putString("current_user_name",u.getName());
-                    editor.putString("current_user_contact",u.getContact_no());
-                    editor.commit();
-
+                        name.setText(u.getName());
+                        contact.setText(u.getContact_no());
+                        editor.putString("current_user_name",u.getName());
+                        editor.putString("current_user_contact",u.getContact_no());
+                        editor.commit();
+                    }
                 }
 
                 @Override
@@ -99,7 +118,8 @@ public class HomeFragment extends Fragment {
 
                 }
             });
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
 
         }
@@ -159,8 +179,20 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
 
                 if(preferences.getString("active", "no").equals("no")) {
-                    shareLocationToTrusted();
-                    callActionScreen();
+
+                    DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person").child("counter");
+                    databaseReference.setValue("0");
+
+                    final DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
+                    int a=Integer.parseInt(preferences.getString("problem-id","1"));
+
+                    a++;
+
+
+                    databaseReference1.setValue(String.valueOf(a));
+
+                  // shareLocationToTrusted();
+                     callActionScreen();
                 }
                 else
                 {
@@ -181,7 +213,7 @@ public class HomeFragment extends Fragment {
 
     }*/
 
-    private void callActionScreen(){
+    public void callActionScreen(){
         Intent intent = new Intent(getActivity(), action_screen.class);
         startActivity(intent);
     }
@@ -265,16 +297,18 @@ public class HomeFragment extends Fragment {
 
                 editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record_data")
+                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                         .child(editText.getText().toString());
 
-                databaseReference.addValueEventListener(new ValueEventListener() {
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        if (!(dataSnapshot.getValue()==null))
+                        if (dataSnapshot.exists() )
                         {
                             Toast.makeText(getActivity(),"Starting the live Tracking",Toast.LENGTH_LONG).show();
+                            editor.putString("problem-id",editText.getText().toString());
+                            editor.commit();
 
                             new_user_info();
                             dialog.dismiss();
@@ -311,38 +345,39 @@ public class HomeFragment extends Fragment {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
+
         final   EditText name=dialog.findViewById(R.id.new_entry_name);
         final EditText contact=dialog.findViewById(R.id.new_entry_contact);
 
+
         final int[] a = new int[1];
 
-        final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person").child("counter");
+        final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person").child("counter");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 a[0] =dataSnapshot.getValue().hashCode();
 
-            }
+                Log.e("hjkiuy",String.valueOf(a[0]));
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                person_details details=new person_details(new location_model("0","0")
+                        ,new person_info(preferences.getString("current_user_name","NA")
+                        ,preferences.getString("current_user_contact","NA")),"1");
 
-            }
-        });
-
-                person_details details=new person_details(new location_model("0","0"),new person_info(preferences.getString("current_user_name","NA"),preferences.getString("current_user_contact","NA")),"1");
-
-                DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                        .child("1").child("person").child("person_info").child("person_no_"+ String.valueOf(a[0]));
+                DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference()
+                        .child("Problem_Record")
+                        .child(preferences.getString("problem-id","1"))
+                        .child("person")
+                        .child("person_info")
+                        .child("person_no_"+ a[0]);
 
                 databaseReference1.setValue(details);
 
 
-                editor.putString("new_user_problem_id","1");
-                editor.putString("new_user_name",name.getText().toString());
-                editor.putString("new_user_contact",contact.getText().toString());
+                editor.putString("new_user_name",preferences.getString("current_user_name","NA"));
+                editor.putString("new_user_contact",preferences.getString("current_user_contact","NA"));
                 editor.putString("new_user_counter", String.valueOf(a[0]));
                 editor.putString("active","yes");
                 editor.commit();
@@ -353,6 +388,16 @@ public class HomeFragment extends Fragment {
 
                 Intent i=new Intent(getActivity(), MapActivity.class);
                 startActivity(i);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
     }
 

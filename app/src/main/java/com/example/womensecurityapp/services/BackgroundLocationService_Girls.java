@@ -83,7 +83,7 @@ public class BackgroundLocationService_Girls extends Service {
 
         databaseReference_report = FirebaseDatabase.getInstance().getReference()
                 .child("Problem_Record")
-                .child("1")
+                .child(preferences.getString("problem-id","1"))
                 .child("Report");
 
         oldHour = 0;
@@ -159,7 +159,7 @@ public class BackgroundLocationService_Girls extends Service {
 
                             databaseReference_location = FirebaseDatabase.getInstance().getReference()
                                     .child("Problem_Record")
-                                    .child("1")
+                                    .child(preferences.getString("problem-id","1"))
                                     .child("Location");
 
                             databaseReference_location.setValue(location);
@@ -198,10 +198,15 @@ public class BackgroundLocationService_Girls extends Service {
             modelReport.setTime(time);
             modelReport.setLatitude(String.valueOf(currentLocation.getLatitude()));
             modelReport.setLongitude(String.valueOf(currentLocation.getLongitude()));
-            modelReport.setPlace(address.get(0).getSubLocality());
+            try {
+                modelReport.setPlace(address.get(0).getSubLocality());
 
-            databaseReference_report.push().setValue(modelReport);
+                databaseReference_report.push().setValue(modelReport);
+            }
+            catch (Exception e)
+            {
 
+            }
         }
     }
 

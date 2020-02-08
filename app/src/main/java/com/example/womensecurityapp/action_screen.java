@@ -73,6 +73,8 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.womensecurityapp.MainActivity.preferences;
+
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
@@ -207,10 +209,12 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private void init(){
 
 
+        Log.e("counter",preferences.getString("problem-id","147"));
+
         databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                .child("1").child("Location");
+                .child(preferences.getString("problem-id","1")).child("Location");
         databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                .child("1").child("person").child("person_info");
+                .child(preferences.getString("problem-id","1")).child("person").child("person_info");
 
 
         // init widgets
