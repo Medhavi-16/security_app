@@ -13,19 +13,18 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.womensecurityapp.Main2Activity;
 import com.example.womensecurityapp.MapActivity;
 import com.example.womensecurityapp.R;
 import com.example.womensecurityapp.action_screen;
@@ -53,9 +52,13 @@ public class HomeFragment extends Fragment {
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
     private DatabaseReference databaseReference;
+    /*public static SharedPreferences preferences;
+    public static SharedPreferences.Editor editor;*/
 
     private HomeViewModel homeViewModel;
     private Button shareLocation,help,start,recent;
+
+    private ToggleButton toggleButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -63,6 +66,14 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         final TextView name=root.findViewById(R.id.home_name);
         final TextView contact=root.findViewById(R.id.home_contact);
+
+        toggleButton = root.findViewById(R.id.toggleButton);
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+            }
+        });
 
         final DatabaseReference databaseReference_coubter = FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
         databaseReference_coubter.addListenerForSingleValueEvent(new ValueEventListener() {

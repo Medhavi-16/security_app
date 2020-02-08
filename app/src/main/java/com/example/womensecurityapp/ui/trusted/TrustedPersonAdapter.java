@@ -37,7 +37,16 @@ public class TrustedPersonAdapter extends RecyclerView.Adapter<TrustedPersonAdap
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
 
         //get data
+        String personName = trustedPersonModel.get(position).getName();
+        String personRelation = trustedPersonModel.get(position).getRelation();
+        String personcontact = trustedPersonModel.get(position).getContact();
+        String personAddress = trustedPersonModel.get(position).getAddress();
 
+        //set data
+        holder.name.setText(personName);
+        holder.relation.setText(personRelation);
+        holder.contact.setText(personcontact);
+        holder.address.setText(personAddress);
 
     }
 

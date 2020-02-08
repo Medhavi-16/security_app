@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.womensecurityapp.R;
 import com.example.womensecurityapp.Report.AdapterReport;
 import com.example.womensecurityapp.Report.ModelReport;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,13 +31,14 @@ import java.util.List;
 public class HistoryFragment extends Fragment {
 
     private static final String TAG = "HistoryFragment";
-    private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
 
     private HistoryViewModel historyViewModel;
     private RecyclerView recyclerView;
     private AdapterReport adapterReport;
     List<ModelReport> modelReportList;
     DatabaseReference databaseReferenceReport;
+    DatabaseReference dbRefProblem;
+    Spinner spinner;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -44,6 +47,26 @@ public class HistoryFragment extends Fragment {
         historyViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
+
+            }
+        });
+
+        spinner = root.findViewById(R.id.history_spinner);
+        dbRefProblem = FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("ProblemID");
+        dbRefProblem.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
