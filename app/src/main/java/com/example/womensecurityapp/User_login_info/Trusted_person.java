@@ -74,12 +74,6 @@ public class Trusted_person extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
     }
     private void showDialog()
     {

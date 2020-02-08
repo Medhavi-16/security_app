@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
 import com.example.womensecurityapp.services.SMS;
+import com.example.womensecurityapp.services.foreground_service;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,12 +44,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.UUID;
+
 import static com.example.womensecurityapp.MainActivity.editor;
 import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
+    public static final String tag_service = "MyServiceTag";
+    public static final int REQUEST_PERMISSION_CODE = 1000;
 
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
@@ -57,7 +64,9 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private Button shareLocation,help,share,start,recent;
 
-    private ToggleButton toggleButton;
+    //variables
+    String pathSave = "";
+    MediaRecorder mediaRecorder;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -66,11 +75,37 @@ public class HomeFragment extends Fragment {
         final TextView name=root.findViewById(R.id.home_name);
         final TextView contact=root.findViewById(R.id.home_contact);
 
-        toggleButton = root.findViewById(R.id.toggleButton);
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ToggleButton shakeButton = root.findViewById(R.id.shakeToggleButton);
+        shakeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
+                if (b){
+                    startShakeService();
+                }
+                else {
+                    stopShakeService();
+                }
+
+            }
+        });
+
+        ToggleButton recodingButton = root.findViewById(R.id.RecordingToggleButton);
+        recodingButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b){
+                    if (checkPermissionFromDevice()){
+                        startRecording();
+                    }
+                    else {
+                        requestAudioPermission();
+                    }
+                }
+                else {
+                    stopRecording();
+                }
             }
         });
 
@@ -213,13 +248,14 @@ public class HomeFragment extends Fragment {
         if (checkSMSpermission() && checkPhoneStatePermission()){
 
             Log.d(TAG, "sendSMS: message sent");
-            String message = "Hello";
+            String message = "Hello! Here is my Location";
             SMS smsObject = new SMS();
             smsObject.sendSMS(destPhone, message);
 
         }
         else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.SEND_SMS,
+                    Manifest.permission.READ_PHONE_STATE}, SEND_SMS_PERMISSION_REQUEST);
         }
     }
 
@@ -332,27 +368,27 @@ public class HomeFragment extends Fragment {
             }
         });
 
-                person_details details=new person_details(new location_model("0","0"),new person_info(preferences.getString("current_user_name","NA"),preferences.getString("current_user_contact","NA")),"1");
+        person_details details=new person_details(new location_model("0","0"),new person_info(preferences.getString("current_user_name","NA"),preferences.getString("current_user_contact","NA")),"1");
 
-                DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                        .child("1").child("person").child("person_info").child("person_no_"+ String.valueOf(a[0]));
+        DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                .child("1").child("person").child("person_info").child("person_no_"+ String.valueOf(a[0]));
 
-                databaseReference1.setValue(details);
+        databaseReference1.setValue(details);
 
 
-                editor.putString("new_user_problem_id","1");
-                editor.putString("new_user_name",name.getText().toString());
-                editor.putString("new_user_contact",contact.getText().toString());
-                editor.putString("new_user_counter", String.valueOf(a[0]));
-                editor.putString("active","yes");
-                editor.commit();
+        editor.putString("new_user_problem_id","1");
+        editor.putString("new_user_name",name.getText().toString());
+        editor.putString("new_user_contact",contact.getText().toString());
+        editor.putString("new_user_counter", String.valueOf(a[0]));
+        editor.putString("active","yes");
+        editor.commit();
 
-                a[0]++;
+        a[0]++;
 
-                databaseReference.setValue(a[0]);
+        databaseReference.setValue(a[0]);
 
-                Intent i=new Intent(getActivity(), MapActivity.class);
-                startActivity(i);
+        Intent i=new Intent(getActivity(), MapActivity.class);
+        startActivity(i);
 
     }
 
@@ -392,6 +428,90 @@ public class HomeFragment extends Fragment {
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setAttributes(lp);
     }
+
+    private void startShakeService(){
+        Intent serviceIntent = new Intent(getActivity(), foreground_service.class);
+        serviceIntent.addCategory(tag_service);
+        serviceIntent.putExtra("inputExtra", "shake your phone to start the security service");
+
+        ContextCompat.startForegroundService(getActivity(), serviceIntent);
+    }
+
+    private void stopShakeService(){
+        Intent serviceIntent = new Intent(getActivity(), foreground_service.class);
+        serviceIntent.addCategory(tag_service);
+        getActivity().stopService(serviceIntent);
+    }
+
+    private void requestAudioPermission(){
+
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_CODE);
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode){
+
+            case REQUEST_PERMISSION_CODE:{
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+        }
+
+    }
+
+    private boolean checkPermissionFromDevice(){
+
+        int write_external_storage_result = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int record_audio_result = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO);
+
+        return write_external_storage_result == PackageManager.PERMISSION_GRANTED &&
+                record_audio_result == PackageManager.PERMISSION_GRANTED;
+
+    }
+
+    public void startRecording(){
+
+        pathSave = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
+                UUID.randomUUID().toString() + "_audio.3gp";
+
+        setupMediaRecorder();
+        try {
+
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+
+        } catch (Exception e) {
+            Log.d(TAG, "onCreate: " + e.getMessage());
+        }
+
+        Toast.makeText(getActivity(), "Recording...", Toast.LENGTH_SHORT).show();
+    }
+
+    public void stopRecording(){
+        Log.d(TAG, "stopRecording: Recording Stopped");
+        mediaRecorder.stop();
+    }
+
+    private void setupMediaRecorder() {
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(pathSave);
+
+    }
+
 }
 
 

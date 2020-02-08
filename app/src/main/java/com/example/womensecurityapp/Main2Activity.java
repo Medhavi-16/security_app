@@ -1,5 +1,6 @@
 package com.example.womensecurityapp;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,14 +26,11 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.womensecurityapp.User_login_info.Account_setup;
-import com.example.womensecurityapp.User_login_info.Signup;
 import com.example.womensecurityapp.model.User_residential_details;
 import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,6 +44,8 @@ import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class Main2Activity extends AppCompatActivity {
 
+    private static final int STORAGE_REQUEST_CODE = 200;
+
     private AppBarConfiguration mAppBarConfiguration;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
@@ -53,6 +53,8 @@ public class Main2Activity extends AppCompatActivity {
     FirebaseAuth.AuthStateListener authStateListener;
     public static User_residential_details t=new User_residential_details();
     public static String status="true";
+
+    private String[] storagePermissions;
 
 
     @Override
@@ -68,6 +70,8 @@ public class Main2Activity extends AppCompatActivity {
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        requestStoragePermission();
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_profile, R.id.nav_history,
@@ -414,5 +418,9 @@ public class Main2Activity extends AppCompatActivity {
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setAttributes(lp);
+    }
+
+    private void requestStoragePermission(){
+        requestPermissions(storagePermissions, STORAGE_REQUEST_CODE);
     }
 }
