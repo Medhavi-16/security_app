@@ -88,8 +88,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         getLocationPermission();
 
-        databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
-        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person")
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("Location");
+        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person")
                 .child("person_info").child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
 
 
@@ -123,80 +123,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
-
-  /*  private void add_polyline(final DirectionsResult result)
-    {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-
-                for(DirectionsRoute route: result.routes)
-                {
-                    List<com.google.maps.model.LatLng> decodedpath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-
-                    List<LatLng> newDecodepath =new ArrayList<>();
-
-                    for (com.google.maps.model.LatLng latLng: decodedpath)
-                    {
-
-                        newDecodepath.add(new LatLng(
-                                latLng.lat,latLng.lng
-                        ));
-
-                    }
-
-                    Polyline polyline=mMap.addPolyline(new PolylineOptions().addAll(newDecodepath));
-                    polyline.setColor(R.color.colorPrimary);
-                    polyline.setClickable(true);
-
-                }
-            }
-        });
-    }
-    private void calculatedirection()
-    {
-        com.google.maps.model.LatLng final_destination =new com.google.maps.model.LatLng(
-                26.25803796913233,78.16172756056995
-        );
-
-        if(mGeoApiContext==null)
-        {
-            mGeoApiContext=new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDdBWdqC9Xmh2Qbm2I4w9kgPu1883oI-2A")
-                    .build();
-        }
-
-
-        DirectionsApiRequest directions= new DirectionsApiRequest(mGeoApiContext);
-
-        directions.alternatives(true);
-
-        directions.origin(
-                new com.google.maps.model.LatLng(
-                        currentLocation.getLatitude(),currentLocation.getLongitude()
-                )
-        );
-
-        Log.e("hbj", String.valueOf(currentLocation.getLatitude()));
-
-
-
-        directions.destination(final_destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
-            @Override
-            public void onResult(DirectionsResult result) {
-
-                add_polyline(result);
-                Log.e("fgh", String.valueOf(result.routes[0].legs[0].distance));
-
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-
-                Log.e("fgh",e.getMessage());
-
-            }
-        });*/
 
     private void getLocationPermission(){
 
@@ -416,7 +342,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         final TextView contact=dialog.findViewById(R.id.person_girl_contact);
         Button cancel =dialog.findViewById(R.id.person_girl_cancel);
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Person_info").child("1").child("User_info").child("personal_info");
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Person_info").child(preferences.getString("problem-id","1")).child("User_info").child("personal_info");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
