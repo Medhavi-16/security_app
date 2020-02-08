@@ -81,6 +81,7 @@ public class Signup extends AppCompatActivity {
 
                             Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
                             Intent i=new Intent(getApplicationContext(),Account_setup.class);
+                            i.putExtra("edit",0);
                             startActivity(i);
 
                         } else {
@@ -129,6 +130,7 @@ public class Signup extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
                             Intent i=new Intent(getApplicationContext(),Account_setup.class);
+                            i.putExtra("edit",0);
                             startActivity(i);
                         } else {
                             // If sign in fails, display a message to the user.

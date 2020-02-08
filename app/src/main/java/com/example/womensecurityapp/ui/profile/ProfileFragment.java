@@ -1,9 +1,13 @@
 package com.example.womensecurityapp.ui.profile;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,8 +19,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.womensecurityapp.Login;
 import com.example.womensecurityapp.Main2Activity;
 import com.example.womensecurityapp.R;
+import com.example.womensecurityapp.User_login_info.Account_setup;
 import com.example.womensecurityapp.User_login_info.Trusted_person;
 import com.example.womensecurityapp.model.Trusted_person_model;
 import com.example.womensecurityapp.model.User_residential_details;
@@ -46,48 +52,30 @@ public class ProfileFragment extends Fragment {
         city= root.findViewById(R.id.set_city);
         address= root.findViewById(R.id.set_address);
         country=root.findViewById(R.id.set_country);
-       /* final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        databaseReference.child("Personal_info").addValueEventListener(new ValueEventListener() {
+        edit=root.findViewById(R.id.edit);
+        edit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                t=dataSnapshot.getValue(User_residential_details.class);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-       name.setText(Main2Activity.t.getName());
-       email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-       no.setText(Main2Activity.t.getContact_no());
-       city.setText(Main2Activity.t.getCity());
-       address.setText(Main2Activity.t.getHouse_no()+","+Main2Activity.t.getStreet());
-       city.setText(Main2Activity.t.getCity());
-       country.setText(Main2Activity.t.getCountry());
-        /*final DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        databaseReference1.child("Trusted_person").child("Info").child("1").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    Trusted_person_model t1 = dataSnapshot.getValue(Trusted_person_model.class);
-                    Toast.makeText(getContext(),FirebaseAuth.getInstance().getCurrentUser().getUid()+ " "+t1.getName(), Toast.LENGTH_SHORT).show();
-                    name.setText(t1.getName());
-                }
-                else
-                    Toast.makeText(getContext(),"no"+FirebaseAuth.getInstance().getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            public void onClick(View v) {
+                Intent i=new Intent(getActivity(),Account_setup.class);
+                i.putExtra("edit",1);
+                startActivity(i);
             }
         });
-*/
 
 
-       //
+           name.setText(Main2Activity.t.getName());
+
+           email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+           no.setText(Main2Activity.t.getContact_no());
+           city.setText(Main2Activity.t.getCity());
+           address.setText(Main2Activity.t.getHouse_no() + "," + Main2Activity.t.getStreet());
+           city.setText(Main2Activity.t.getCity());
+           country.setText(Main2Activity.t.getCountry());
+
+
+
+
+
       /*  profileModel.getmName().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
@@ -129,4 +117,5 @@ public class ProfileFragment extends Fragment {
 
         return root;
     }
+
 }
