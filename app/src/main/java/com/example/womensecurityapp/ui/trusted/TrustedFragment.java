@@ -20,8 +20,7 @@ public class TrustedFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        trustedViewModel =
-                ViewModelProviders.of(this).get(TrustedViewModel.class);
+        trustedViewModel = ViewModelProviders.of(this).get(TrustedViewModel.class);
         View root = inflater.inflate(R.layout.fragment_trusted, container, false);
         final TextView textView = root.findViewById(R.id.text_tools);
         trustedViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {

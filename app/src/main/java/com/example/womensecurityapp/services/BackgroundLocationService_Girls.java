@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.example.womensecurityapp.Report.ModelReport;
 import com.example.womensecurityapp.model.location_model;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -31,6 +32,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +49,10 @@ public class BackgroundLocationService_Girls extends Service {
     private final static long FASTEST_INTERVAL = 2000;
 
     DatabaseReference databaseReference_location;
+    DatabaseReference databaseReference_report;
+
+    Location currentLocation;
+    int oldMinute, oldHour;
 
     @Nullable
     @Override
@@ -73,6 +80,15 @@ public class BackgroundLocationService_Girls extends Service {
 
             startForeground(1, notification);
         }
+
+        databaseReference_report = FirebaseDatabase.getInstance().getReference()
+                .child("Problem_Record")
+                .child("1")
+                .child("Report");
+
+        oldHour = 0;
+        oldMinute = 0;
+
     }
 
     @SuppressLint("LongLogTag")
@@ -105,46 +121,83 @@ public class BackgroundLocationService_Girls extends Service {
 
                         Log.d(TAG, "onLocationResultG: got location result.");
 
-                        Location currentLocation = locationResult.getLastLocation();
+                        currentLocation = locationResult.getLastLocation();
 
                         if (currentLocation != null) {
 
                             Log.d(TAG, "getLocationG: " + currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
 
 
-                            if (!preferences.getString("is_notification_send","not_known").equals("yes"))
-                            {
-                                Log.e("value",preferences.getString("is_notification_send","not_known"));
+                            if (!preferences.getString("is_notification_send", "not_known").equals("yes")) {
+                                Log.e("value", preferences.getString("is_notification_send", "not_known"));
                                 Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                                 try {
                                     List<Address> address = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
-                                    notification_generator n=new notification_generator();
-                                    n.send_notification("main",address.get(0).getLocality(),getApplicationContext());
+                                    notification_generator n = new notification_generator();
+                                    n.send_notification("main", address.get(0).getLocality(), getApplicationContext());
+
+                                    report(address);
+
                                 } catch (IOException e) {
-                                    e.printStackTrace();
+                                    Log.d(TAG, "getLocation: catch Block");
                                 }
 
-                                editor.putString("is_notification_send","yes");
+                                editor.putString("is_notification_send", "yes");
                                 editor.commit();
                             }
 
 
                             // updating location in firebase
-                            location_model location=new location_model();
+                            location_model location = new location_model();
                             location.setLongitude(String.valueOf(currentLocation.getLongitude()));
                             location.setLatitude(String.valueOf(currentLocation.getLatitude()));
 
-                            databaseReference_location=FirebaseDatabase.getInstance().getReference()
+                            databaseReference_location = FirebaseDatabase.getInstance().getReference()
                                     .child("Problem_Record")
                                     .child("1")
                                     .child("Location");
 
                             databaseReference_location.setValue(location);
-
                         }
                     }
                 },
                 Looper.myLooper()); // Looper.myLooper tells this to repeat forever until thread is destroyed
+    }
+
+    private void report(List<Address> address) {
+
+        Log.d("Background Report","report: called");
+
+        Calendar calendar = Calendar.getInstance();
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm");
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("hh");
+        String minute = simpleDateFormat.format(calendar.getTime());
+        String hour = simpleDateFormat1.format(calendar.getTime());
+        int currentMinute = Integer.parseInt(minute);
+        int currentHour = Integer.parseInt(hour);
+
+
+
+        if ((currentHour*60 + currentMinute) - (oldHour*60 + oldMinute) >= 1) {
+
+            Log.d("Background Report", "report: updating report");
+
+            oldHour = currentHour;
+            oldMinute = currentMinute;
+
+            ModelReport modelReport = new ModelReport();
+            SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("hh:mm:ss");
+            String time = simpleDateFormat2.format(calendar.getTime());
+            modelReport.setTime(time);
+            modelReport.setLatitude(String.valueOf(currentLocation.getLatitude()));
+            modelReport.setLongitude(String.valueOf(currentLocation.getLongitude()));
+            modelReport.setPlace(address.get(0).getSubLocality());
+
+            databaseReference_report.push().setValue(modelReport);
+
+        }
     }
 
 
