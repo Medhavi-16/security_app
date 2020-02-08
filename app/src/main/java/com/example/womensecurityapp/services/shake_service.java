@@ -15,6 +15,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import static com.example.womensecurityapp.MainActivity.editor;
 import static com.example.womensecurityapp.MainActivity.preferences;
 
@@ -80,6 +83,14 @@ public class shake_service extends Service implements SensorEventListener {
                         if (!isLocationServiceRunning()) {
 
                             Intent serviceIntent = new Intent(this, BackgroundLocationService_Girls.class);
+
+                            final DatabaseReference databaseReference1= FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
+                            int a=Integer.parseInt(preferences.getString("problem-id","1"));
+
+                            a++;
+
+
+                            databaseReference1.setValue(String.valueOf(a));
 
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 

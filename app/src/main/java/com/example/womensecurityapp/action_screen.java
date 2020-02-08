@@ -73,6 +73,7 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.womensecurityapp.MainActivity.editor;
 import static com.example.womensecurityapp.MainActivity.preferences;
 
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
@@ -153,6 +154,15 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 //stop shake service
                 Intent shakeIntent = new Intent(action_screen.this, foreground_service.class);
                 stopService(shakeIntent);
+
+                DatabaseReference databaseReference2=FirebaseDatabase.getInstance().getReference().child("Proble_Record").child(preferences.getString("problem-id","1")).child("status");
+                databaseReference2.setValue("Inactive");
+
+                editor.putString("girl-login","no");
+                editor.putString("active","no");
+                editor.putString("is_notification_send","not_known");
+                editor.putString("is_shake_happened","yes");
+                editor.commit();
 
             }
         });

@@ -44,6 +44,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import static com.example.womensecurityapp.MainActivity.editor;
@@ -217,6 +221,18 @@ public class HomeFragment extends Fragment {
                     DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person").child("counter");
                     databaseReference.setValue("0");
 
+                    DatabaseReference databaseReference2=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("status");
+                    databaseReference2.setValue("active");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+                    String currentDateandTime = sdf.format(new Date());
+
+                    DatabaseReference databaseReference3=FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("problem-record").child(currentDateandTime);
+                    databaseReference3.setValue(preferences.getString("problem-id","NA"));
+
+                    DatabaseReference databaseReference4=FirebaseDatabase.getInstance().getReference().child("problem-id").child(preferences.getString("problem-id","1"));
+                    databaseReference4.setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
                     final DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
                     int a=Integer.parseInt(preferences.getString("problem-id","1"));
 
@@ -227,6 +243,9 @@ public class HomeFragment extends Fragment {
 
                   // shareLocationToTrusted();
                      callActionScreen();
+
+                     editor.putString("girl-login","yes");
+                     editor.commit();
                 }
                 else
                 {
@@ -332,7 +351,7 @@ public class HomeFragment extends Fragment {
 
                 editText.onEditorAction(EditorInfo.IME_ACTION_DONE);
 
-                DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                final DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record")
                         .child(editText.getText().toString());
 
                 databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -341,12 +360,33 @@ public class HomeFragment extends Fragment {
 
                         if (dataSnapshot.exists() )
                         {
-                            Toast.makeText(getActivity(),"Starting the live Tracking",Toast.LENGTH_LONG).show();
-                            editor.putString("problem-id",editText.getText().toString());
-                            editor.commit();
+                            DatabaseReference check=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                                    .child(editText.getText().toString()).child("status");
 
-                            new_user_info();
-                            dialog.dismiss();
+                            check.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
+
+
+                                    if (pdataSnapshot.getValue().toString().equals("active")) {
+                                        Toast.makeText(getActivity(), "Starting the live Tracking", Toast.LENGTH_LONG).show();
+                                        editor.putString("problem-id", editText.getText().toString());
+                                        editor.commit();
+
+                                        new_user_info();
+                                        dialog.dismiss();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(getActivity(),"Problem is closed",Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                         else
                         {
