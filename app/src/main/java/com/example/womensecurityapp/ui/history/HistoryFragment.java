@@ -1,7 +1,7 @@
 package com.example.womensecurityapp.ui.history;
 
-import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.womensecurityapp.R;
+import com.example.womensecurityapp.Report.AdapterReport;
+import com.example.womensecurityapp.Report.ModelReport;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
@@ -23,7 +33,9 @@ public class HistoryFragment extends Fragment {
 
     private HistoryViewModel historyViewModel;
     private RecyclerView recyclerView;
-    LocationManager locationManager;
+    private AdapterReport adapterReport;
+    List<ModelReport> modelReportList;
+    DatabaseReference databaseReferenceReport;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -36,14 +48,48 @@ public class HistoryFragment extends Fragment {
             }
         });
 
-        recyclerView = root.findViewById(R.id.report_recyclerView);
+        recyclerView = root.findViewById(R.id.history_recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        modelReportList = new ArrayList<>();
+        databaseReferenceReport = FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                .child("1").child("Report");
+        makeTimelineReport();
 
         return root;
     }
 
+    private void makeTimelineReport(){
 
+        Log.d(TAG, "makeTimelineReport: called");
 
+        databaseReferenceReport.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                modelReportList.clear();
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+
+                    ModelReport modelReport = ds.getValue(ModelReport.class);
+                    modelReportList.add(modelReport);
+
+                    adapterReport = new AdapterReport(getActivity(), modelReportList);
+                    recyclerView.setAdapter(adapterReport);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Log.d(TAG,"makeTimelineReport: Something went wrong");
+            }
+        });
+
+    }
 
 }

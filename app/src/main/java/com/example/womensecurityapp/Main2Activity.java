@@ -1,9 +1,14 @@
 package com.example.womensecurityapp;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,15 +22,28 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.womensecurityapp.User_login_info.Signup;
+import com.example.womensecurityapp.model.User_residential_details;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Main2Activity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
+    FirebaseAuth auth;
+    FirebaseAuth.AuthStateListener authStateListener;
+    public static User_residential_details t=new User_residential_details();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +53,7 @@ public class Main2Activity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         drawer = findViewById(R.id.drawer_layout);
         final NavigationView navigationView = findViewById(R.id.nav_view);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -109,59 +127,56 @@ public class Main2Activity extends AppCompatActivity {
                 }
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
-               /** Fragment fragment = null;
-                Class fragmentClass= HomeFragment.class;
-                if(id==R.id.nav_profile)
-                {
-                   fragmentClass=ProfileFragment.class;
-
-                }
-
-
-
-
-                try {
-                    fragment = (Fragment) fragmentClass.newInstance();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.frame_layout,fragment).commit();
-                DrawerLayout drawer = findViewById(R.id.drawer_layout);
-                //;*/
 
 
             }
         });
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
 
-
-       /** navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+       auth=FirebaseAuth.getInstance();
+        authStateListener=new FirebaseAuth.AuthStateListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                menuItem.setChecked(true);
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user=firebaseAuth.getCurrentUser();
+                if(user==null)
+                {
+                    showDialog();
+                }
+                else
+                {
+                    final DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    databaseReference.child("Personal_info").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            t=dataSnapshot.getValue(User_residential_details.class);
 
-                drawer.closeDrawers();
+                        }
 
-                int id = menuItem.getItemId();
-                if(id==R.id.nav_profile)
-                    navController.navigate(R.id.nav_profile);
-                else if(id==R.id.nav_history)
-                    navController.navigate(R.id.nav_history);
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                drawer.closeDrawer(GravityCompat.START);
-                return true;
+                        }
+                    });
+                }
+
             }
-        });
-    }*/
+        };
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main2, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id=item.getItemId();
+        if(id==R.id.logout)
+       auth.signOut();
+        return super.onOptionsItemSelected(item);
+
     }
 
     @Override
@@ -184,6 +199,45 @@ public class Main2Activity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        auth.addAuthStateListener(authStateListener);
+
+
+        super.onStart();
+
+    }
+    public void showDialog()
+    {
+        Dialog dialog=new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); // before
+        dialog.setContentView(R.layout.dialog_login);
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT ;
+        dialog.setCancelable(true);
+        Button login=dialog.findViewById(R.id.login);
+        final Button Signup=dialog.findViewById(R.id.signup);
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(Main2Activity.this, Login.class);
+                startActivity(i);
+
+            }
+        });
+        Signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(Main2Activity.this, com.example.womensecurityapp.User_login_info.Signup.class);
+                startActivity(i);
+
+            }
+        });
+        dialog.show();
+    }
 }
 
 

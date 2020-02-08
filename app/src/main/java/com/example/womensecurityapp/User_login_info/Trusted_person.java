@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.womensecurityapp.Main2Activity;
 import com.example.womensecurityapp.R;
 import com.example.womensecurityapp.model.Trusted_person_model;
 import com.google.android.material.textfield.TextInputLayout;
@@ -102,6 +103,8 @@ public class Trusted_person extends AppCompatActivity {
         proceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i=new Intent(Trusted_person.this, Main2Activity.class);
+                startActivity(i);
 
             }
         });
