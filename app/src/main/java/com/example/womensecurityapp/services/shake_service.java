@@ -34,19 +34,18 @@ public class shake_service extends Service implements SensorEventListener {
 
     private Float shakeThreshold = 30.0f;
 
-    public shake_service(){}
+    public shake_service() {
+    }
 
     @Override
-    public void onCreate()
-    {
-        Log.e("kj","uin");
+    public void onCreate() {
+        Log.e("kj", "uin");
         super.onCreate();
-        vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        if(sensorManager!=null)
-        {
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        if (sensorManager != null) {
             Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this,accelerometer,SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
     }
@@ -60,28 +59,29 @@ public class shake_service extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        Log.e("kijj","uin");
+        Log.e("kijj", "uin");
 
-        if(sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-        {
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             long curTime = System.currentTimeMillis();
 
-            if((curTime - lastShakeTime)>MIN_TIME_BETWEEN_SHAKES)
-            {
+            if ((curTime - lastShakeTime) > MIN_TIME_BETWEEN_SHAKES) {
                 float x = sensorEvent.values[0];
                 float y = sensorEvent.values[1];
                 float z = sensorEvent.values[2];
 
-                double acceleration = Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+Math.pow(z,2))-SensorManager.GRAVITY_EARTH;
+                double acceleration = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2)) - SensorManager.GRAVITY_EARTH;
 
                 if (acceleration > shakeThreshold) {
                     lastShakeTime = curTime;
 
-                    if(!preferences.getString("is_shake_happened","not_known").equals("yes")) {
+                    if (!preferences.getString("is_shake_happened", "not_known").equals("yes")) {
 
-                        Toast.makeText(getApplicationContext(),"problem is creating..",Toast.LENGTH_LONG).show();
+                        Log.e(TAG, preferences.getString("is_shake_happened", "not_known"));
+
+                        Toast.makeText(getApplicationContext(), "problem is creating..", Toast.LENGTH_LONG).show();
 
                         if (!isLocationServiceRunning()) {
+
                             Intent serviceIntent = new Intent(this, BackgroundLocationService_Girls.class);
 
                             final DatabaseReference databaseReference1= FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
@@ -99,13 +99,13 @@ public class shake_service extends Service implements SensorEventListener {
                                 startService(serviceIntent);
                             }
 
-                            editor.putString("is_shake_happened","yes");
+                            editor.putString("is_shake_happened", "yes");
                             editor.commit();
                         }
+                    } else{
+                        Toast.makeText(getApplicationContext(), "problem already created", Toast.LENGTH_LONG).show();
+                        Log.e(TAG, preferences.getString("is_shake_happened", "not_known"));
                     }
-
-                    else
-                        Toast.makeText(getApplicationContext(),"problem already created",Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -120,8 +120,8 @@ public class shake_service extends Service implements SensorEventListener {
 
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         assert manager != null;
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
-            if("com.example.womensecurityapp.services.BackgroundLocationService_Girls".equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ("com.example.womensecurityapp.services.BackgroundLocationService_Girls".equals(service.service.getClassName())) {
                 Log.d(TAG, "isLocationServiceRunning: location service is already running.");
                 return true;
             }

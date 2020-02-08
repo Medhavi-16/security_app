@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -45,6 +46,7 @@ import static com.example.womensecurityapp.MainActivity.preferences;
 public class Main2Activity extends AppCompatActivity {
 
     private static final int STORAGE_REQUEST_CODE = 200;
+    public static final int PERMISSION_REQUEST_CODE = 1234;
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActionBarDrawerToggle toggle;
@@ -54,6 +56,8 @@ public class Main2Activity extends AppCompatActivity {
     public static User_residential_details t=new User_residential_details();
     public static String status="true";
 
+    private String[] appPermissions;
+
     private String[] storagePermissions;
 
 
@@ -61,6 +65,9 @@ public class Main2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+
+        getAppPermissions();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawer = findViewById(R.id.drawer_layout);
@@ -451,4 +458,16 @@ public class Main2Activity extends AppCompatActivity {
     private void requestStoragePermission(){
         requestPermissions(storagePermissions, STORAGE_REQUEST_CODE);
     }
+
+    private void getAppPermissions(){
+
+        appPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET,
+                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA,
+                Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE};
+
+        ActivityCompat.requestPermissions(this, appPermissions, PERMISSION_REQUEST_CODE);
+
+    }
+
 }

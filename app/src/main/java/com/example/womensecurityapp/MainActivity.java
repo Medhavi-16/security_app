@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
-    private String[] storagePermissions;
 
     private Button actionScreenBtn, new_entry, recent_activity;
     public static SharedPreferences preferences;
@@ -100,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
         final Button start_service = findViewById(R.id.main_start_service);
         Button stop_service = findViewById(R.id.main_stop_service);
 
-      
-        final Button start_service = findViewById(R.id.main_start_service);
-        Button stop_service = findViewById(R.id.main_stop_service);
 
         new_registration = findViewById(R.id.new_user);
 

@@ -155,13 +155,14 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 Intent shakeIntent = new Intent(action_screen.this, foreground_service.class);
                 stopService(shakeIntent);
 
-                DatabaseReference databaseReference2=FirebaseDatabase.getInstance().getReference().child("Proble_Record").child(preferences.getString("problem-id","1")).child("status");
+                DatabaseReference databaseReference2=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                        .child(preferences.getString("problem-id","1")).child("status");
                 databaseReference2.setValue("Inactive");
 
                 editor.putString("girl-login","no");
                 editor.putString("active","no");
                 editor.putString("is_notification_send","not_known");
-                editor.putString("is_shake_happened","yes");
+                editor.putString("is_shake_happened","not_known");
                 editor.commit();
 
             }
