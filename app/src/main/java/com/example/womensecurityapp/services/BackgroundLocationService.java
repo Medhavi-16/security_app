@@ -112,7 +112,7 @@ public class BackgroundLocationService extends Service {
 
                             databaseReference_person_location= FirebaseDatabase.getInstance().getReference()
                                     .child("Problem_Record")
-                                    .child("1").child("person")
+                                    .child(preferences.getString("problem-id","1")).child("person")
                                     .child("person_info")
                                     .child("person_no_" + preferences.getString("new_user_counter","1"))
                                     .child("location");
