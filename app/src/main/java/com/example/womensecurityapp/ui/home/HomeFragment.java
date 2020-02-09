@@ -201,7 +201,7 @@ public class HomeFragment extends Fragment {
 //        init();
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users")
-                .child("RO9P5BwxjQazx9XUeZ4dsufdTny1")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child("Trusted_person")
                 .child("Info");
 

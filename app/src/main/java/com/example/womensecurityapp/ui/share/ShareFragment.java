@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import com.example.womensecurityapp.R;
 public class ShareFragment extends Fragment {
 
     private ShareViewModel shareViewModel;
+    private ShareActionProvider shareActionProvider;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -31,11 +33,12 @@ public class ShareFragment extends Fragment {
             }
         });
 
-        /*ApplicationInfo api = getActivity().getApplicationContext().getApplicationInfo();
+/*        ApplicationInfo api = getActivity().getApplicationInfo();
         String apkPath = api.sourceDir;
         Intent intent = new Intent((Intent.ACTION_SEND));
         intent.setType("application/vnd.android.package-archive");
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(apkPath)));
+//        intent.setType("text/plain");
+//        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(apkPath)));
         startActivity(Intent.createChooser(intent, "Share Via"));*/
 
         return root;
