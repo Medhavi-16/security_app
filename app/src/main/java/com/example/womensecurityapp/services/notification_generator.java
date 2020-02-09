@@ -97,5 +97,4 @@ public class notification_generator {
             jsonObjectRequest.setRetryPolicy(policy);
             requestQueue.add(jsonObjectRequest);
         }
-
     }
