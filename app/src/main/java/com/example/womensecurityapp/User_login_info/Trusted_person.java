@@ -50,6 +50,19 @@ public class Trusted_person extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         c=Integer.parseInt(dataSnapshot.getValue().toString());
+                        Toast.makeText(getApplicationContext(),String.valueOf(c),Toast.LENGTH_SHORT).show();
+
+                        if(name.getEditText().getText().toString().isEmpty() || contact.getEditText().getText().toString().isEmpty())
+                            Toast.makeText(getApplicationContext(),"Name and contact no. is mandatory",Toast.LENGTH_SHORT).show();
+                        else
+                        {
+                            Trusted_person_model trusted_person_model=new Trusted_person_model(name.getEditText().getText().toString(),contact.getEditText().getText().toString(),mail.getEditText().getText().toString(),address.getEditText().getText().toString(),relation.getEditText().getText().toString());
+                            d.child("Info").child(Integer.toString((c+1))).setValue(trusted_person_model);
+                            d.child("count").setValue(Integer.toString((c+1)));
+                            Toast.makeText(getApplicationContext(),String.valueOf(c+1),Toast.LENGTH_SHORT).show();
+                            showDialog();
+
+                        }
                     }
 
                     @Override
@@ -59,17 +72,7 @@ public class Trusted_person extends AppCompatActivity {
                 });
 
 
-                if(name.getEditText().getText().toString().isEmpty() || contact.getEditText().getText().toString().isEmpty())
-                    Toast.makeText(getApplicationContext(),"Name and contact no. is mandatory",Toast.LENGTH_SHORT).show();
-                else
-                {
-                    Trusted_person_model trusted_person_model=new Trusted_person_model(name.getEditText().getText().toString(),contact.getEditText().getText().toString(),mail.getEditText().getText().toString(),address.getEditText().getText().toString(),relation.getEditText().getText().toString());
-                    d.child("Info").child(Integer.toString((c+1))).setValue(trusted_person_model);
-                    d.child("count").setValue(Integer.toString((c+1)));
-                    Toast.makeText(getApplicationContext(),String.valueOf(c+1),Toast.LENGTH_SHORT).show();
-                    showDialog();
 
-                }
 
             }
         });

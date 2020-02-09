@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.womensecurityapp.MapActivity;
 import com.example.womensecurityapp.R;
+import com.example.womensecurityapp.User_login_info.Account_setup;
 import com.example.womensecurityapp.action_screen;
 import com.example.womensecurityapp.model.Trusted_person_model;
 import com.example.womensecurityapp.model.User_residential_details;
@@ -133,11 +134,30 @@ public class HomeFragment extends Fragment {
 
         try {
 
+
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Personal_info");
 
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+
+                    {
+                        User_residential_details u = dataSnapshot.getValue(User_residential_details.class);
+                        name.setText(u.getName());
+                        contact.setText(u.getContact_no());
+                        editor.putString("current_user_name",u.getName());
+                        editor.putString("current_user_contact",u.getContact_no());
+                        editor.commit();
+                    }
+                    else
+                    {
+                        Intent i=new Intent(getActivity(), Account_setup.class);
+                        startActivity(i);
+                    }
+
+
+
                     if(dataSnapshot.exists())
                     {
                         User_residential_details u = new User_residential_details();
