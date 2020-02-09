@@ -73,6 +73,9 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.womensecurityapp.MainActivity.editor;
+import static com.example.womensecurityapp.MainActivity.preferences;
+
 public class action_screen extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
@@ -152,6 +155,16 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 Intent shakeIntent = new Intent(action_screen.this, foreground_service.class);
                 stopService(shakeIntent);
 
+                DatabaseReference databaseReference2=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                        .child(preferences.getString("problem-id","1")).child("status");
+                databaseReference2.setValue("Inactive");
+
+                editor.putString("girl-login","no");
+                editor.putString("active","no");
+                editor.putString("is_notification_send","not_known");
+                editor.putString("is_shake_happened","not_known");
+                editor.commit();
+
             }
         });
 
@@ -207,10 +220,12 @@ public class action_screen extends AppCompatActivity implements LocationListener
     private void init(){
 
 
+        Log.e("counter",preferences.getString("problem-id","147"));
+
         databaseReference_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                .child("1").child("Location");
+                .child(preferences.getString("problem-id","1")).child("Location");
         databaseReference_person=FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                .child("1").child("person").child("person_info");
+                .child(preferences.getString("problem-id","1")).child("person").child("person_info");
 
 
         // init widgets
