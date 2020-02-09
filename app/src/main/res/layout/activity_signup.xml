@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".User_login_info.Signup">
@@ -12,6 +13,7 @@
         android:id="@+id/user_id"
         android:hint="user id"
         android:layout_margin="7dp"
+        app:endIconMode="clear_text"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -25,10 +27,13 @@
         android:id="@+id/password"
         android:hint="password"
         android:layout_margin="7dp"
+        app:passwordToggleEnabled="true"
+        app:errorEnabled="true"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -39,6 +44,8 @@
         android:id="@+id/confirm_password"
         android:hint="Re-enter password"
         android:layout_margin="7dp"
+        app:passwordToggleEnabled="true"
+        app:errorEnabled="true"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -46,12 +53,20 @@
             />
 
     </com.google.android.material.textfield.TextInputLayout>
-    <Button
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/quantum_pink"
         android:text="Signup"
         android:id="@+id/signup"
-        />
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+
+        android:layout_gravity="center"
+        app:spinning_bar_color="@color/white"/>
 
     <com.google.android.gms.common.SignInButton
         android:layout_width="match_parent"
@@ -59,13 +74,21 @@
         android:layout_margin="10dp"
         android:id="@+id/google_auth">
     </com.google.android.gms.common.SignInButton>
-
-    <Button
-        android:layout_width="wrap_content"
+    <me.ibrahimsn.lib.CirclesLoadingView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/next_page"
-        android:text="next page">
+        app:circleRadius="5dp"
+        app:circleMargin="8dp"
+        app:animDistance="10dp"
+        app:animDuration="500"
+        app:animDelay="150"
+        app:animInterpolator="accelerateDecelerate"
+        android:id="@+id/loading"
+        android:visibility="invisible"
 
-    </Button>
+        />
+
+
+
 
 </LinearLayout>
