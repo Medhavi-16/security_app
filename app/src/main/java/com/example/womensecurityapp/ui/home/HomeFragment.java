@@ -2,9 +2,12 @@ package com.example.womensecurityapp.ui.home;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -61,7 +64,7 @@ public class HomeFragment extends Fragment {
 
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference_sms;
     /*public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;*/
 
@@ -147,6 +150,7 @@ public class HomeFragment extends Fragment {
                         contact.setText(u.getContact_no());
                         editor.putString("current_user_name",u.getName());
                         editor.putString("current_user_contact",u.getContact_no());
+                        editor.putString("current_user_city",u.getCity().toUpperCase());
                         editor.commit();
                     }
                 }
@@ -200,11 +204,6 @@ public class HomeFragment extends Fragment {
 
 //        init();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users")
-                .child("RO9P5BwxjQazx9XUeZ4dsufdTny1")
-                .child("Trusted_person")
-                .child("Info");
-
         shareLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -257,15 +256,6 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    /*private void init(){
-
-        // shared preference for info
-        // it contains the basic info about the user
-        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        editor = preferences.edit();
-
-    }*/
-
     public void callActionScreen(){
         Intent intent = new Intent(getActivity(), action_screen.class);
         startActivity(intent);
@@ -273,15 +263,23 @@ public class HomeFragment extends Fragment {
 
     private void shareLocationToTrusted(){
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference_sms = FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("Trusted_person")
+                .child("Info");
+
+        databaseReference_sms.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Toast.makeText(getActivity(),"Location shared Via SMS",Toast.LENGTH_LONG).show();
 
                 for (DataSnapshot ds: dataSnapshot.getChildren()){
 
                     Trusted_person_model trusted_person_model = ds.getValue(Trusted_person_model.class);
                     String destPhone = trusted_person_model.getContact();
                     sendSMS(destPhone);
+
                 }
             }
 
