@@ -139,7 +139,7 @@ public class BackgroundLocationService_Girls extends Service {
                                 try {
                                     Log.d(TAG, "preferences: called");
                                     notification_generator n = new notification_generator();
-                                    n.send_notification("main", address.get(0).getLocality(), getApplicationContext());
+                                    n.send_notification(preferences.getString("current_user_name","A lady")+" want your Help!","Problem Id ("+preferences.getString("problem-id","NA")+")",getApplicationContext());
 
                                 } catch (Exception e) {
                                     Log.d(TAG, "getLocation: catch Block");

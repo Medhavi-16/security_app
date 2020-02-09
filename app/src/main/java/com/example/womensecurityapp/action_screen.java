@@ -130,7 +130,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
             public void onClick(View v) {
 
                 notification_generator n=new notification_generator();
-                n.send_notification("main","body",getApplicationContext());
+                n.send_notification(preferences.getString("current_user_name","A lady")+" want your Help!","problem ID ("+preferences.getString("problem-id","NA")+")",getApplicationContext());
             }
         });
 
