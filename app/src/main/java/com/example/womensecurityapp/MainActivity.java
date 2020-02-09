@@ -70,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        recent_activity = findViewById(R.id.main_recent_activity);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = preferences.edit();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel1 = new NotificationChannel("mynotification", "mynotification", NotificationManager.IMPORTANCE_DEFAULT);
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel2 = new NotificationChannel("Gwalior", "Gwalior", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel2 = new NotificationChannel(preferences.getString("current_user_city","GWALIOR"), preferences.getString("current_user_city","GWALIOR"), NotificationManager.IMPORTANCE_DEFAULT);
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel2);
@@ -137,9 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         // shared preference for info
         // it contains the basic info about the user
-        recent_activity = findViewById(R.id.main_recent_activity);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = preferences.edit();
+
 
 
         actionScreenBtn = findViewById(R.id.main_actionScreenBtn);

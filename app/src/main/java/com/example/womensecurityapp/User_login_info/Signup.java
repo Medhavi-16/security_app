@@ -2,6 +2,7 @@ package com.example.womensecurityapp.User_login_info;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,44 +27,42 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.maps.errors.ApiException;
 
+import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
+import me.ibrahimsn.lib.CirclesLoadingView;
+
 public class Signup extends AppCompatActivity {
 
     FirebaseAuth auth;
-    Button signup;
+    CircularProgressButton signup;
     TextInputLayout id, password;
     private FirebaseAuth mAuth;
     GoogleSignInClient mGoogleSignInClient;
+    CirclesLoadingView loading;
+    SignInButton google;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-//        Button next=findViewById(R.id.next_page);
-
-        /*next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i=new Intent(getApplicationContext(),Account_setup.class);
-                startActivity(i);
-            }
-        });*/
+        loading=findViewById(R.id.loading);
 
         auth = FirebaseAuth.getInstance();
         signup = findViewById(R.id.signup);
         id = findViewById(R.id.user_id);
         password = findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();
-        SignInButton google=findViewById(R.id.google_auth);
+         google=findViewById(R.id.google_auth);
 
         google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 signIn();
             }
         });
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
@@ -74,23 +73,39 @@ public class Signup extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startanim();
+                google.setEnabled(false);
                 auth.createUserWithEmailAndPassword(id.getEditText().getText().toString(), password.getEditText().getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
 
+                        if (task.isSuccessful()) {
+                            signup.setText("Logging in");
                             Toast.makeText(getApplicationContext(),"Registered Successfully",Toast.LENGTH_LONG).show();
                             Intent i=new Intent(getApplicationContext(),Account_setup.class);
                             i.putExtra("edit",0);
                             startActivity(i);
 
                         } else {
-
+                            signup.stopAnimation();
+                            signup.revertAnimation();
+                            Toast.makeText(getApplicationContext(),"Failed Signing Up",Toast.LENGTH_SHORT).show();
+                            google.setEnabled(true);
                         }
                     }
                 });
             }
         });
+    }
+    void startanim()
+    {
+        signup.startAnimation();
+        // btn.setBackgroundColor(getResources().getColor(R.color.white));
+        signup.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.buttonbganim));
+        signup.setSpinningBarColor(R.color.white);
+        signup.setSpinningBarWidth(12.0f);
+        Toast.makeText(getApplicationContext(),"SEE", Toast.LENGTH_LONG).show();
+
     }
 
     private void signIn() {
@@ -112,12 +127,15 @@ public class Signup extends AppCompatActivity {
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 // ...
+                loading.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(),"Google Sign In failed",Toast.LENGTH_LONG).show();
             }
         }
     }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.e("123", "firebaseAuthWithGoogle:" + acct.getId());
-
+        signup.setEnabled(false);
+        loading.setVisibility(View.VISIBLE);
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -135,6 +153,9 @@ public class Signup extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("123", "signInWithCredential:failure", task.getException());
+                            loading.setVisibility(View.INVISIBLE);
+                            Toast.makeText(getApplicationContext(),"Google Sign In failed",Toast.LENGTH_LONG).show();
+                            signup.setEnabled(true);
                         }
                     }
                 });

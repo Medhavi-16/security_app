@@ -45,31 +45,61 @@ public class Trusted_person extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                d.child("count").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        c=Integer.parseInt(dataSnapshot.getValue().toString());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
                 if(name.getEditText().getText().toString().isEmpty() || contact.getEditText().getText().toString().isEmpty())
                     Toast.makeText(getApplicationContext(),"Name and contact no. is mandatory",Toast.LENGTH_SHORT).show();
                 else
                 {
-                    Trusted_person_model trusted_person_model=new Trusted_person_model(name.getEditText().getText().toString(),contact.getEditText().getText().toString(),mail.getEditText().getText().toString(),address.getEditText().getText().toString(),relation.getEditText().getText().toString());
-                    d.child("Info").child(Integer.toString((c+1))).setValue(trusted_person_model);
-                    d.child("count").setValue(Integer.toString((c+1)));
-                    Toast.makeText(getApplicationContext(),String.valueOf(c+1),Toast.LENGTH_SHORT).show();
-                    showDialog();
+                    d.child("Info").child(contact.getEditText().getText().toString()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists())
+                            {
+                                Toast.makeText(getApplicationContext(),"Person already exists",Toast.LENGTH_LONG).show();
+                                showDialog();
+                               /**/
+                            }
+                            else
+                            {
+                                Trusted_person_model trusted_person_model=new Trusted_person_model(name.getEditText().getText().toString(),contact.getEditText().getText().toString(),mail.getEditText().getText().toString(),address.getEditText().getText().toString(),relation.getEditText().getText().toString());
+                                d.child("Info").child(contact.getEditText().getText().toString()).setValue(trusted_person_model);
+                                d.child("count").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                       int c=Integer.parseInt(dataSnapshot.getValue().toString());
+                                        d.child("count").setValue(Integer.toString((c+1)));
+                                        Toast.makeText(getApplicationContext(),String.valueOf(c+1),Toast.LENGTH_SHORT).show();
+                                        showDialog();
+
+
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+
+
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
 
                 }
+
 
             }
         });

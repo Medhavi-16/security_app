@@ -2,9 +2,12 @@ package com.example.womensecurityapp.ui.home;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -29,6 +32,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.womensecurityapp.MapActivity;
 import com.example.womensecurityapp.R;
+import com.example.womensecurityapp.User_login_info.Account_setup;
 import com.example.womensecurityapp.action_screen;
 import com.example.womensecurityapp.model.Trusted_person_model;
 import com.example.womensecurityapp.model.User_residential_details;
@@ -61,7 +65,7 @@ public class HomeFragment extends Fragment {
 
     private static final int SEND_SMS_PERMISSION_REQUEST = 0;
 
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference_sms;
     /*public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;*/
 
@@ -133,11 +137,30 @@ public class HomeFragment extends Fragment {
 
         try {
 
+
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Personal_info");
 
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+
+                    {
+                        User_residential_details u = dataSnapshot.getValue(User_residential_details.class);
+                        name.setText(u.getName());
+                        contact.setText(u.getContact_no());
+                        editor.putString("current_user_name",u.getName());
+                        editor.putString("current_user_contact",u.getContact_no());
+                        editor.commit();
+                    }
+                    else
+                    {
+                        Intent i=new Intent(getActivity(), Account_setup.class);
+                        startActivity(i);
+                    }
+
+
+
                     if(dataSnapshot.exists())
                     {
                         User_residential_details u = new User_residential_details();
@@ -147,6 +170,7 @@ public class HomeFragment extends Fragment {
                         contact.setText(u.getContact_no());
                         editor.putString("current_user_name",u.getName());
                         editor.putString("current_user_contact",u.getContact_no());
+                        editor.putString("current_user_city",u.getCity().toUpperCase());
                         editor.commit();
                     }
                 }
@@ -199,11 +223,6 @@ public class HomeFragment extends Fragment {
         });
 
 //        init();
-
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child("Trusted_person")
-                .child("Info");
 
         shareLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -273,15 +292,23 @@ public class HomeFragment extends Fragment {
 
     private void shareLocationToTrusted(){
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference_sms = FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("Trusted_person")
+                .child("Info");
+
+        databaseReference_sms.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Toast.makeText(getActivity(),"Location shared Via SMS",Toast.LENGTH_LONG).show();
 
                 for (DataSnapshot ds: dataSnapshot.getChildren()){
 
                     Trusted_person_model trusted_person_model = ds.getValue(Trusted_person_model.class);
                     String destPhone = trusted_person_model.getContact();
                     sendSMS(destPhone);
+
                 }
             }
 

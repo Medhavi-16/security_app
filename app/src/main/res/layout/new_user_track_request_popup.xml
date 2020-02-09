@@ -20,12 +20,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enter Into the live location window"
-            android:fontFamily="@string/alert"
+            android:text="Enter into the live location window"
+            android:fontFamily="monospace"
             android:textStyle="bold"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:textSize="20dp">
+            android:textSize="20dp"
+            android:textColor="@color/quantum_white_100"
+            >
 
 
         </TextView>
