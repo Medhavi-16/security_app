@@ -228,7 +228,7 @@ public class Main2Activity extends AppCompatActivity {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.copyFrom(dialog.getWindow().getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT ;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT ;
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
         Button login=dialog.findViewById(R.id.login);

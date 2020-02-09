@@ -15,11 +15,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Home Screen"
+                android:text="Welcome!"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:textAlignment="center"
                 android:textSize="20sp"
+                android:background="@color/white"
                 />
 
         </LinearLayout>
@@ -56,7 +59,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="contact No."
+                android:text="Contact No."
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:id="@+id/home_contact"
