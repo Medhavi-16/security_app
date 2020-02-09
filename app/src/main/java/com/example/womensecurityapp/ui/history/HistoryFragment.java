@@ -5,6 +5,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.womensecurityapp.R;
 import com.example.womensecurityapp.Report.AdapterReport;
 import com.example.womensecurityapp.Report.ModelReport;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,13 +33,16 @@ import java.util.List;
 public class HistoryFragment extends Fragment {
 
     private static final String TAG = "HistoryFragment";
-    private static final int FINE_LOCATION_PERMISSION_REQUEST_CODE = 0;
 
     private HistoryViewModel historyViewModel;
     private RecyclerView recyclerView;
     private AdapterReport adapterReport;
     List<ModelReport> modelReportList;
     DatabaseReference databaseReferenceReport;
+    DatabaseReference dbRefProblem;
+    Spinner spinner;
+    ArrayAdapter<String> adapter;
+    ArrayList<String> spinnerDataList;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -48,16 +55,41 @@ public class HistoryFragment extends Fragment {
             }
         });
 
+        spinner = root.findViewById(R.id.history_spinner);
         recyclerView = root.findViewById(R.id.history_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        modelReportList = new ArrayList<>();
-        databaseReferenceReport = FirebaseDatabase.getInstance().getReference().child("Problem_Record")
-                .child("1").child("Report");
-        makeTimelineReport();
+        spinnerDataList = new ArrayList<>();
+        adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                spinnerDataList);
+
+        dbRefProblem = FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("problem-record");
+
+        spinner.setAdapter(adapter);
+        retrievePastProblemId();
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                String pID = spinner.getSelectedItem().toString();
+                modelReportList = new ArrayList<>();
+                databaseReferenceReport = FirebaseDatabase.getInstance().getReference().child("Problem_Record")
+                        .child(pID).child("Report");
+                makeTimelineReport();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         return root;
     }
@@ -90,6 +122,27 @@ public class HistoryFragment extends Fragment {
             }
         });
 
+    }
+
+    public void retrievePastProblemId(){
+
+        dbRefProblem.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+
+                    String id = ds.getValue(String.class);
+                    spinnerDataList.add(id);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

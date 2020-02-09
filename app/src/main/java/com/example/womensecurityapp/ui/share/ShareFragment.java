@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -30,6 +30,14 @@ public class ShareFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        /*ApplicationInfo api = getActivity().getApplicationContext().getApplicationInfo();
+        String apkPath = api.sourceDir;
+        Intent intent = new Intent((Intent.ACTION_SEND));
+        intent.setType("application/vnd.android.package-archive");
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(apkPath)));
+        startActivity(Intent.createChooser(intent, "Share Via"));*/
+
         return root;
     }
 }

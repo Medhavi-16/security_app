@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -88,11 +89,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         getLocationPermission();
 
-        databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("Location");
-        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child("1").child("person")
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("Location");
+        databaseReference_person_location=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person")
                 .child("person_info").child("person_no_"+preferences.getString("new_user_counter","1")).child("location");
-
-
     }
 
     private void init(){
@@ -123,80 +122,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
-
-  /*  private void add_polyline(final DirectionsResult result)
-    {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-
-                for(DirectionsRoute route: result.routes)
-                {
-                    List<com.google.maps.model.LatLng> decodedpath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-
-                    List<LatLng> newDecodepath =new ArrayList<>();
-
-                    for (com.google.maps.model.LatLng latLng: decodedpath)
-                    {
-
-                        newDecodepath.add(new LatLng(
-                                latLng.lat,latLng.lng
-                        ));
-
-                    }
-
-                    Polyline polyline=mMap.addPolyline(new PolylineOptions().addAll(newDecodepath));
-                    polyline.setColor(R.color.colorPrimary);
-                    polyline.setClickable(true);
-
-                }
-            }
-        });
-    }
-    private void calculatedirection()
-    {
-        com.google.maps.model.LatLng final_destination =new com.google.maps.model.LatLng(
-                26.25803796913233,78.16172756056995
-        );
-
-        if(mGeoApiContext==null)
-        {
-            mGeoApiContext=new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDdBWdqC9Xmh2Qbm2I4w9kgPu1883oI-2A")
-                    .build();
-        }
-
-
-        DirectionsApiRequest directions= new DirectionsApiRequest(mGeoApiContext);
-
-        directions.alternatives(true);
-
-        directions.origin(
-                new com.google.maps.model.LatLng(
-                        currentLocation.getLatitude(),currentLocation.getLongitude()
-                )
-        );
-
-        Log.e("hbj", String.valueOf(currentLocation.getLatitude()));
-
-
-
-        directions.destination(final_destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
-            @Override
-            public void onResult(DirectionsResult result) {
-
-                add_polyline(result);
-                Log.e("fgh", String.valueOf(result.routes[0].legs[0].distance));
-
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-
-                Log.e("fgh",e.getMessage());
-
-            }
-        });*/
 
     private void getLocationPermission(){
 
@@ -416,19 +341,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         final TextView contact=dialog.findViewById(R.id.person_girl_contact);
         Button cancel =dialog.findViewById(R.id.person_girl_cancel);
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Person_info").child("1").child("User_info").child("personal_info");
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference databaseReference1= FirebaseDatabase.getInstance().getReference().child("problem-id").child(preferences.getString("problem-id","1"));
+        databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                User_residential_details person=new User_residential_details();
-                person=dataSnapshot.getValue(User_residential_details.class);
+                DatabaseReference databaseReference11=FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.getValue().toString()).child("Personal_info");
+                databaseReference11.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot pdataSnapshot) {
+                        User_residential_details person=new User_residential_details();
+                        person=pdataSnapshot.getValue(User_residential_details.class);
 
-                name.setText(person.getName());
-                address.setText(person.getHouse_no()+" "+person.getStreet()+" "+person.getCity()+" "+person.getCountry());
-                contact.setText(person.getContact_no());
+                        name.setText(person.getName());
+                        address.setText(person.getHouse_no()+" "+person.getStreet()+" "+person.getCity()+" "+person.getCountry());
+                        contact.setText(person.getContact_no());
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override

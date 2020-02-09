@@ -1,8 +1,5 @@
 package com.example.womensecurityapp.User_login_info;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +8,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.womensecurityapp.Main2Activity;
 import com.example.womensecurityapp.R;
@@ -76,12 +76,6 @@ public class Trusted_person extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
-
 
     }
     private void showDialog()
