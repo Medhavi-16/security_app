@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -86,6 +87,16 @@ public class shake_service extends Service implements SensorEventListener {
 
                             final DatabaseReference databaseReference1= FirebaseDatabase.getInstance().getReference().child("problem-id").child("counter");
                             int a=Integer.parseInt(preferences.getString("problem-id","1"));
+
+                            DatabaseReference databaseReference2=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("status");
+                            databaseReference2.setValue("active");
+
+                            DatabaseReference databaseReference4=FirebaseDatabase.getInstance().getReference().child("problem-id").child(preferences.getString("problem-id","1"));
+                            databaseReference4.setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+
+                            DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Problem_Record").child(preferences.getString("problem-id","1")).child("person").child("counter");
+                            databaseReference.setValue("0");
 
                             a++;
 
