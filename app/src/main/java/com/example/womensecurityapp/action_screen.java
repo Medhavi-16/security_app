@@ -93,6 +93,7 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     private String safe_location_FLAG;
     private String storagePath = "users_problem_photo_imgs/ ";
+    private LocationManager locationManager;
 
     //widgets
 
@@ -107,7 +108,6 @@ public class action_screen extends AppCompatActivity implements LocationListener
 
     //Variables
     private Boolean location_permission_granted = false;
-    LocationManager locationManager;
     DatabaseReference databaseReference_location;
     DatabaseReference databaseReference_person,databaseReference_person_info;
     private GoogleMap mMap;
@@ -164,6 +164,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 editor.putString("is_notification_send","not_known");
                 editor.putString("is_shake_happened","not_known");
                 editor.commit();
+
+                finish();
 
             }
         });

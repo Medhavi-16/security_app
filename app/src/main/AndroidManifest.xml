@@ -47,6 +47,7 @@
         <service android:name=".services.BackgroundLocationService_Girls" />
         <service android:name=".services.shake_service" />
         <service android:name=".services.foreground_service" />
+        <service android:name=".services.SingleShotLocationProvider" />
     </application>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
