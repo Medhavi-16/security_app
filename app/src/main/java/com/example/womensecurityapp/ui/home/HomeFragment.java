@@ -140,21 +140,7 @@ public class HomeFragment extends Fragment {
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
 
-                    {
-                        User_residential_details u = dataSnapshot.getValue(User_residential_details.class);
-                        name.setText(u.getName());
-                        contact.setText(u.getContact_no());
-                        editor.putString("current_user_name",u.getName());
-                        editor.putString("current_user_contact",u.getContact_no());
-                        editor.commit();
-                    }
-                    else
-                    {
-                        Intent i=new Intent(getActivity(), Account_setup.class);
-                        startActivity(i);
-                    }
 
 
 
@@ -169,6 +155,12 @@ public class HomeFragment extends Fragment {
                         editor.putString("current_user_contact",u.getContact_no());
                         editor.putString("current_user_city",u.getCity().toUpperCase());
                         editor.commit();
+                    }
+
+                    else
+                    {
+                        Intent i=new Intent(getActivity(), Account_setup.class);
+                        startActivity(i);
                     }
                 }
 
