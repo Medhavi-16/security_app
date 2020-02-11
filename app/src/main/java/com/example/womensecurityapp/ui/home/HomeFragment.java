@@ -2,12 +2,9 @@ package com.example.womensecurityapp.ui.home;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -47,7 +44,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -143,21 +139,7 @@ public class HomeFragment extends Fragment {
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
 
-                    {
-                        User_residential_details u = dataSnapshot.getValue(User_residential_details.class);
-                        name.setText(u.getName());
-                        contact.setText(u.getContact_no());
-                        editor.putString("current_user_name",u.getName());
-                        editor.putString("current_user_contact",u.getContact_no());
-                        editor.commit();
-                    }
-                    else
-                    {
-                        Intent i=new Intent(getActivity(), Account_setup.class);
-                        startActivity(i);
-                    }
 
 
 
@@ -172,6 +154,12 @@ public class HomeFragment extends Fragment {
                         editor.putString("current_user_contact",u.getContact_no());
                         editor.putString("current_user_city",u.getCity().toUpperCase());
                         editor.commit();
+                    }
+
+                    else
+                    {
+                        Intent i=new Intent(getActivity(), Account_setup.class);
+                        startActivity(i);
                     }
                 }
 
