@@ -165,6 +165,8 @@ public class action_screen extends AppCompatActivity implements LocationListener
                 editor.putString("is_shake_happened","not_known");
                 editor.commit();
 
+                finish();
+
             }
         });
 
