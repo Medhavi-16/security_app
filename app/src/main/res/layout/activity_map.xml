@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_gps"
             fab:fab_size="mini"
-            android:id="@+id/map_float_notice_board"
+            android:id="@+id/map_float_chat"
             app:fab_label="Chat" />
     </com.github.clans.fab.FloatingActionMenu>
 

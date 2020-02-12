@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -77,7 +78,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        trusted=findViewById(R.id.map_float_notice_board);
+        trusted=findViewById(R.id.map_float_trusted);
 
         trusted.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -266,36 +267,46 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void set_maker(location_model maker_location) {
 
-        LatLng latLng=new LatLng(Double.valueOf(maker_location.getLatitude()),Double.valueOf(maker_location.getLongitude()));
+        try {
 
-        // Creating a marker
-        MarkerOptions markerOptions = new MarkerOptions();
 
-        // Setting the position for the marker
-        markerOptions.position(latLng);
+            LatLng latLng = new LatLng(Double.valueOf(maker_location.getLatitude()), Double.valueOf(maker_location.getLongitude()));
 
-        // Setting the title for the marker.
-        // This will be displayed on taping the marker
-        markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+            // Creating a marker
+            MarkerOptions markerOptions = new MarkerOptions();
 
-        // Clears the previously touched position
-        mMap.clear();
+            // Setting the position for the marker
+            markerOptions.position(latLng);
 
-        // Animating to the touched position
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            // Setting the title for the marker.
+            // This will be displayed on taping the marker
+            markerOptions.title(latLng.latitude + " : " + latLng.longitude);
 
-        // Placing a marker on the touched position
-        mMap.addMarker(markerOptions);
+            // Clears the previously touched position
+            mMap.clear();
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
+            // Animating to the touched position
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 
-                girl_info_popup();
+            // Placing a marker on the touched position
+            mMap.addMarker(markerOptions);
 
-                return false;
-            }
-        });
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+
+                    girl_info_popup();
+
+
+                    return false;
+                }
+            });
+
+        } catch (NumberFormatException e) {
+            finish();
+
+            e.printStackTrace();
+        }
     }
 
     private void startBackgroundLocationService(){
@@ -400,21 +411,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         final ArrayList<Trusted_person_model> person=new ArrayList<>();
 
-        ListView listView=dialog.findViewById(R.id.trusted_person_popup_list);
+        final ListView listView=dialog.findViewById(R.id.trusted_person_popup_list);
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Users").child("RO9P5BwxjQazx9XUeZ4dsufdTny1").child("Trusted_person").child("Info");
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference databaseReference1=FirebaseDatabase.getInstance().getReference().child("problem-id").child(preferences.getString("problem-id","1"));
+        databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (final DataSnapshot postSnapshot : dataSnapshot.getChildren())
-                {
-                    Trusted_person_model t=new Trusted_person_model();
-                    t=postSnapshot.getValue(Trusted_person_model.class);
-                    person.add(new Trusted_person_model(t.getName(), t.getContact(), "---", t.getAddress(),t.getRelation()));
+                DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.getValue().toString()).child("Trusted_person").child("Info");
 
-                }
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (final DataSnapshot postSnapshot : dataSnapshot.getChildren())
+                        {
+                            Trusted_person_model t=new Trusted_person_model();
+                            t=postSnapshot.getValue(Trusted_person_model.class);
+                            person.add(new Trusted_person_model(t.getName(), t.getContact(), "---", t.getAddress(),t.getRelation()));
+
+                        }
+
+
+                        trusted_person_adapter myAdapter = new trusted_person_adapter(getApplicationContext(), R.layout.trusted_person_model, person);
+                        listView.setAdapter(myAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -422,8 +449,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         });
-        trusted_person_adapter myAdapter = new trusted_person_adapter(getApplicationContext(), R.layout.trusted_person_model, person);
-        listView.setAdapter(myAdapter);
+
 
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);

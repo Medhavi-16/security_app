@@ -35,11 +35,11 @@ public class trusted_person_adapter extends ArrayAdapter<Trusted_person_model> {
 
         View v = convertView;
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        v = inflater.inflate(R.layout.trusted_person_model, null);
-        TextView name = (TextView) v.findViewById(R.id.trusted_person_name);
-        TextView  contact= (TextView) v.findViewById(R.id.trusted_person_contact);
-        TextView relation = (TextView) v.findViewById(R.id.trusted_person_relation);
-        TextView address=v.findViewById(R.id.trusted_person_adress);
+        v = inflater.inflate(R.layout.trusted_person_view, null);
+        TextView name = (TextView) v.findViewById(R.id.trusted_person_view_name);
+        TextView  contact= (TextView) v.findViewById(R.id.trusted_person_view_contact);
+        TextView relation = (TextView) v.findViewById(R.id.trusted_person_view_relation);
+        TextView address=v.findViewById(R.id.trusted_person_view_adress);
         name.setText(list_member_list.get(position).getName());
         contact.setText(list_member_list.get(position).getContact());
         relation.setText(list_member_list.get(position).getRelation());

@@ -2,12 +2,9 @@ package com.example.womensecurityapp.ui.home;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -40,6 +37,7 @@ import com.example.womensecurityapp.model.location_model;
 import com.example.womensecurityapp.model.person_details;
 import com.example.womensecurityapp.model.person_info;
 import com.example.womensecurityapp.services.SMS;
+import com.example.womensecurityapp.services.SingleShotLocationProvider;
 import com.example.womensecurityapp.services.foreground_service;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -47,7 +45,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -143,21 +140,7 @@ public class HomeFragment extends Fragment {
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
 
-                    {
-                        User_residential_details u = dataSnapshot.getValue(User_residential_details.class);
-                        name.setText(u.getName());
-                        contact.setText(u.getContact_no());
-                        editor.putString("current_user_name",u.getName());
-                        editor.putString("current_user_contact",u.getContact_no());
-                        editor.commit();
-                    }
-                    else
-                    {
-                        Intent i=new Intent(getActivity(), Account_setup.class);
-                        startActivity(i);
-                    }
 
 
 
@@ -172,6 +155,12 @@ public class HomeFragment extends Fragment {
                         editor.putString("current_user_contact",u.getContact_no());
                         editor.putString("current_user_city",u.getCity().toUpperCase());
                         editor.commit();
+                    }
+
+                    else
+                    {
+                        Intent i=new Intent(getActivity(), Account_setup.class);
+                        startActivity(i);
                     }
                 }
 
@@ -260,8 +249,8 @@ public class HomeFragment extends Fragment {
 
                     databaseReference1.setValue(String.valueOf(a));
 
-                  // shareLocationToTrusted();
-                     callActionScreen();
+                    shareLocationToTrusted();
+                    callActionScreen();
 
                      editor.putString("girl-login","yes");
                      editor.commit();
@@ -275,6 +264,7 @@ public class HomeFragment extends Fragment {
 
         return root;
     }
+
 
     public void callActionScreen(){
         Intent intent = new Intent(getActivity(), action_screen.class);
@@ -315,10 +305,15 @@ public class HomeFragment extends Fragment {
 
         if (checkSMSpermission() && checkPhoneStatePermission()){
 
-            Log.d(TAG, "sendSMS: message sent");
-            String message = "Hello! Here is my Location";
-            SMS smsObject = new SMS();
-            smsObject.sendSMS(destPhone, message);
+            SingleShotLocationProvider.requestSingleUpdate(getActivity(), new SingleShotLocationProvider.LocationCallback() {
+                @Override
+                public void onNewLocationAvailable(SingleShotLocationProvider.GPSCoordinates location) {
+                    Log.d(TAG, "sendSMS: message sent");
+                    String message = "http://maps.google.com/maps?saddr=" + location.toString();
+                    SMS smsObject = new SMS();
+                    smsObject.sendSMS(destPhone, message);
+                }
+            });
 
         }
         else {
